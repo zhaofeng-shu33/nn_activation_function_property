@@ -7,7 +7,7 @@ TRAIN_TIMES = 100
 n = 3
 k = 2
 def build_model(x, y, activate=False):
-    w = tf.get_variable('w', [k,1], dtype=tf.float64)    
+    w = tf.get_variable('w', [k,1], dtype=tf.float64, initializer=tf.zeros_initializer)    
     unactivated_term = tf.matmul(x, w)
     if(activate):
         b = tf.get_variable('b', [1,1], dtype=tf.float64)
@@ -20,20 +20,20 @@ def build_model(x, y, activate=False):
     return loss
 
 def train_model(loss):
-    optimizer = tf.train.MomentumOptimizer(0.01, 0.01)
+    optimizer = tf.train.AdamOptimizer(0.01)
     train = optimizer.minimize(loss) 
     sess = tf.Session()
     init = tf.global_variables_initializer()
     sess.run(init)    
     for i in range(TRAIN_TIMES):
-      _, loss_value = sess.run((train, loss))
+        _, loss_value = sess.run((train, loss))
     return loss_value  
 
 def get_spherical_coordinate():
     '''see https://math.stackexchange.com/questions/444700/uniform-distribution-on-the-surface-of-unit-sphere 
        for detail
     '''
-    normal_list = np.random.normal(n)
+    normal_list = np.random.normal(size=n)
     return normal_list / np.linalg.norm(normal_list)
 
 def generate_uniform_sample():
@@ -72,15 +72,22 @@ if __name__ == '__main__':
     parser.add_argument('--activate', default='False')
     parser.add_argument('--sample_times', type=int, default=100)
     parser.add_argument('--train_times', type=int, default=100)
+    parser.add_argument('--debug', default=False, type=bool, nargs='?', const=True, help='whether to debug') 
     parser.add_argument('--n', type=int, default=3)
     parser.add_argument('--k', type=int, default=2)
+    parser.add_argument('--seed', type=int, default=0)
     args = parser.parse_args()
     TRAIN_TIMES = args.train_times
     n = args.n
     k = args.k
     activate = False
     exec('activate = ' + args.activate)
-    if(activate):
+    if activate:
         k = k -1
+    if args.seed != 0:
+        np.random.seed(args.seed)
+    if args.debug:
+        import pdb
+        pdb.set_trace()
     average_value = get_average(args.sample_times, activate)
     print(args.activate, average_value)
