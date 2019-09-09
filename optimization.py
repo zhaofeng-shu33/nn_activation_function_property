@@ -27,27 +27,20 @@ def train_model(loss):
       _, loss_value = sess.run((train, loss))
     return loss_value  
 
-def get_spherical_coordinate(x_unif, y_unif):
-    '''see https://www.bogotobogo.com/Algorithms/uniform_distribution_sphere.php
+def get_spherical_coordinate():
+    '''see https://math.stackexchange.com/questions/444700/uniform-distribution-on-the-surface-of-unit-sphere 
        for detail
     '''
-    theta = 2 * np.pi * y_unif
-    phi = np.arccos(2*x_unif - 1)
-    x_coord = np.sin(phi) * np.cos(theta)
-    y_coord = np.sin(phi) * np.sin(theta)
-    z_coord = np.cos(phi)
-    return np.array([x_coord,y_coord,z_coord])
+    normal_list = np.random.normal(n)
+    return normal_list / np.linalg.norm(normal_list)
 
 def generate_uniform_sample():
-    y_random_number_base = np.random.random(k)
-    spherical_coordinate = get_spherical_coordinate(y_random_number_base[0],
-        y_random_number_base[1])
-    y = tf.constant(spherical_coordinate, shape=(3,1))
+    spherical_coordinate = get_spherical_coordinate()
+    y = tf.constant(spherical_coordinate, shape=(n, 1))
     x_random_number_base = np.random.random(2*k)
     x_np_array = np.zeros([k,n])
     for i in range(k):
-        x_np_array[i,:] = get_spherical_coordinate(x_random_number_base[2*i],
-            x_random_number_base[2*i+1])
+        x_np_array[i,:] = get_spherical_coordinate()
     x = tf.constant(x_np_array.T)
     return (x, y)
 
@@ -66,7 +59,7 @@ def get_average(num_times, activate=False):
 
 class TestFunc(unittest.TestCase):
     def test_get_spherical_coordinate(self):
-        arr = get_spherical_coordinate(0.5, 0.7)
+        arr = get_spherical_coordinate()
         self.assertAlmostEqual(np.linalg.norm(arr), 1.0)
     def test_generate_uniform_sample(self):
         x_t, y_t = generate_uniform_sample()
@@ -76,8 +69,8 @@ class TestFunc(unittest.TestCase):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--activate', default='False')
-    parser.add_argument('--sample_times', default=100)
-    parser.add_argument('--train_times', default=100)
+    parser.add_argument('--sample_times', type=int, default=100)
+    parser.add_argument('--train_times', type=int, default=100)
     args = parser.parse_args()
     TRAIN_TIMES = args.train_times
     activate = False
