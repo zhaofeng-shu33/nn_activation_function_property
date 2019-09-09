@@ -78,8 +78,9 @@ if __name__ == '__main__':
     parser.add_argument('--activate', default='False')
     parser.add_argument('--sample_times', default=100)
     parser.add_argument('--train_times', default=100)
-    parser.parse_args()
+    args = parser.parse_args()
     TRAIN_TIMES = args.train_times
     activate = False
-    exec('activate = args.activate')
+    exec('activate = ' + args.activate)
     average_value = get_average(args.sample_times, activate)
+    print(args.activate, average_value)
