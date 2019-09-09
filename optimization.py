@@ -7,10 +7,12 @@ TRAIN_TIMES = 100
 n = 3
 k = 2
 def build_model(x, y, activate=False):
-    w = tf.get_variable('w', [k,1], dtype=tf.float64)
-    b = tf.get_variable('b', [n,1], dtype=tf.float64) 
-    unactivated_term = tf.add(tf.matmul(x,w),b)
-    if(activate):   
+    w = tf.get_variable('w', [k,1], dtype=tf.float64)    
+    unactivated_term = tf.matmul(x, w)
+    if(activate):
+        b = tf.get_variable('b', [1,1], dtype=tf.float64)
+        b_const = tf.constant(np.ones([n, 1]))  
+        unactivated_term = tf.add(unactivated_term, tf.multiply(b, b_const)) 
         y_pred = activate(unactivated_term)
     else:
         y_pred = unactivated_term
@@ -78,5 +80,7 @@ if __name__ == '__main__':
     k = args.k
     activate = False
     exec('activate = ' + args.activate)
+    if(activate):
+        k = k -1
     average_value = get_average(args.sample_times, activate)
     print(args.activate, average_value)
