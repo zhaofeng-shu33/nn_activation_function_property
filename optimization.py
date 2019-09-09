@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 import unittest
 import argparse
+from datetime import datetime
 # This is a sample program to explore the property of non-linear activation
 TRAIN_TIMES = 100
 n = 3
@@ -67,6 +68,29 @@ class TestFunc(unittest.TestCase):
         self.assertEqual(x_t.shape, (3,2))
         self.assertEqual(y_t.shape, (3,1))
 
+def task(method_name, num_times, q):
+    activate_inner = eval(method_name)
+    average_value = get_average(num_times, activate_inner)
+    q.put({method_name: average_value})
+
+def collect_results(num_times):
+    time_str = datetime.now().strftime('%Y-%m-%d')
+    file_name = '%d-%d-%d-%d-%s.json' %(n, k, num_times, TRAIN_TIMES, time_str)
+    dic = {}
+    from multiprocessing import Process, Queue
+    import json
+    process_list = []
+    q = Queue()
+    for i in ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6']:
+        t = Process(target=task, args=(i, num_times, q))
+        t.start() 
+        process_list.append(t)  
+    for i in range(5):
+        process_list[i].join()
+        dic.update(q.get())
+    with open('build/' + file_name,'w') as f:
+        json.dump(dic, f,indent=4)    
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--activate', default='False')
@@ -76,6 +100,7 @@ if __name__ == '__main__':
     parser.add_argument('--n', type=int, default=3)
     parser.add_argument('--k', type=int, default=2)
     parser.add_argument('--seed', type=int, default=0)
+    parser.add_argument('--collect', default=False, type=bool, nargs='?', const=True)
     args = parser.parse_args()
     TRAIN_TIMES = args.train_times
     n = args.n
@@ -89,5 +114,8 @@ if __name__ == '__main__':
     if args.debug:
         import pdb
         pdb.set_trace()
-    average_value = get_average(args.sample_times, activate)
-    print(args.activate, average_value)
+    if(args.collect):
+        collect_results(args.sample_times)
+    else:
+        average_value = get_average(args.sample_times, activate)
+        print(args.activate, average_value)
