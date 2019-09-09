@@ -2,7 +2,7 @@ import numpy as np
 import tensorflow as tf
 import unittest
 import argparse
-# This is a sample program to explore the function of non-linear activation
+# This is a sample program to explore the property of non-linear activation
 TRAIN_TIMES = 100
 n = 3
 k = 2
