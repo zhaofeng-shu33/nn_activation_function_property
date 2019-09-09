@@ -7,8 +7,8 @@ TRAIN_TIMES = 100
 n = 3
 k = 2
 def build_model(x, y, activate=False):
-    w = tf.get_variable('w', [2,1], dtype=tf.float64)
-    b = tf.get_variable('b', [3,1], dtype=tf.float64) 
+    w = tf.get_variable('w', [k,1], dtype=tf.float64)
+    b = tf.get_variable('b', [n,1], dtype=tf.float64) 
     unactivated_term = tf.add(tf.matmul(x,w),b)
     if(activate):   
         y_pred = activate(unactivated_term)
@@ -18,11 +18,11 @@ def build_model(x, y, activate=False):
     return loss
 
 def train_model(loss):
+    optimizer = tf.train.MomentumOptimizer(0.01, 0.01)
+    train = optimizer.minimize(loss) 
     sess = tf.Session()
     init = tf.global_variables_initializer()
     sess.run(init)    
-    optimizer = tf.train.GradientDescentOptimizer(0.01)
-    train = optimizer.minimize(loss)
     for i in range(TRAIN_TIMES):
       _, loss_value = sess.run((train, loss))
     return loss_value  
@@ -37,7 +37,6 @@ def get_spherical_coordinate():
 def generate_uniform_sample():
     spherical_coordinate = get_spherical_coordinate()
     y = tf.constant(spherical_coordinate, shape=(n, 1))
-    x_random_number_base = np.random.random(2*k)
     x_np_array = np.zeros([k,n])
     for i in range(k):
         x_np_array[i,:] = get_spherical_coordinate()
@@ -71,8 +70,12 @@ if __name__ == '__main__':
     parser.add_argument('--activate', default='False')
     parser.add_argument('--sample_times', type=int, default=100)
     parser.add_argument('--train_times', type=int, default=100)
+    parser.add_argument('--n', type=int, default=3)
+    parser.add_argument('--k', type=int, default=2)
     args = parser.parse_args()
     TRAIN_TIMES = args.train_times
+    n = args.n
+    k = args.k
     activate = False
     exec('activate = ' + args.activate)
     average_value = get_average(args.sample_times, activate)
