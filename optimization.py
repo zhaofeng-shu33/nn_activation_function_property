@@ -16,7 +16,7 @@ def build_model(x, y, activate=False):
         y_pred = activate(unactivated_term)
     else:
         y_pred = unactivated_term
-    loss = tf.losses.mean_squared_error(labels=y, predictions=y_pred)
+    loss = tf.reduce_sum(tf.square(tf.subtract(y_pred, y)))
     return loss
 
 def train_model(loss):
