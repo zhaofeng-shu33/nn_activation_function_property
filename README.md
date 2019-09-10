@@ -6,7 +6,7 @@ python optimization.py --activate tf.sigmoid
 We set n=3, k=2, repeat 500  times; each time trains for 400 epochs.
 
 | activation function    | average loss |
-|---------------------- -|--------------|
+|------------------------|--------------|
 | none                   | 0.333        |
 | tf.sigmoid             | 0.785        |
 | tf.tanh                | 0.331        |

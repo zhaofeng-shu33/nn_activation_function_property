@@ -1,9 +1,12 @@
+import os
+from datetime import datetime
+import json
 import numpy as np
 import tensorflow as tf
 import unittest
 import argparse
-from datetime import datetime
 # This is a sample program to explore the property of non-linear activation
+METHOD_NAME = ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6']
 TRAIN_TIMES = 100
 n = 3
 k = 2
@@ -78,10 +81,9 @@ def collect_results(num_times):
     file_name = '%d-%d-%d-%d-%s.json' %(n, k, num_times, TRAIN_TIMES, time_str)
     dic = {}
     from multiprocessing import Process, Queue
-    import json
     process_list = []
     q = Queue()
-    for i in ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6']:
+    for i in METHOD_NAME:
         t = Process(target=task, args=(i, num_times, q))
         t.start() 
         process_list.append(t)  
@@ -91,9 +93,26 @@ def collect_results(num_times):
     with open('build/' + file_name,'w') as f:
         json.dump(dic, f,indent=4)    
 
+def generate_report_table():
+    from tabulate import tabulate
+    _headers = ['mse', 'none', 'sigmoid', 'tanh', 'relu', 'relu6']
+    table = []
+    for i in os.listdir('build'):
+        n_str, k_str = i.split('-')[0], i.split('-')[1]
+        table_row = ['n=%s,k=%s' % (n_str, k_str)]
+        with open('build/' + i) as f:
+            dic = json.load(f)
+            for j in METHOD_NAME:
+                table_row.append(dic[j])
+        table.append(table_row)
+    md_table_string = tabulate(table, headers=_headers, tablefmt='github', floatfmt='.3f')
+    time_str = datetime.now().strftime('%Y-%m-%d')
+    with open('report-%s.md' % time_str, 'w') as f:
+        f.write(md_table_string)
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--activate', default='False')
+    parser.add_argument('--activate', default='False', choices=METHOD_NAME)
     parser.add_argument('--sample_times', type=int, default=100)
     parser.add_argument('--train_times', type=int, default=100)
     parser.add_argument('--debug', default=False, type=bool, nargs='?', const=True, help='whether to debug') 
@@ -101,6 +120,7 @@ if __name__ == '__main__':
     parser.add_argument('--k', type=int, default=2)
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--collect', default=False, type=bool, nargs='?', const=True)
+    parser.add_argument('--table', default=False, type=bool, nargs='?', const=True)
     args = parser.parse_args()
     TRAIN_TIMES = args.train_times
     n = args.n
@@ -116,6 +136,8 @@ if __name__ == '__main__':
         pdb.set_trace()
     if(args.collect):
         collect_results(args.sample_times)
+    elif(args.table):
+        generate_report_table()
     else:
         average_value = get_average(args.sample_times, activate)
         print(args.activate, average_value)
