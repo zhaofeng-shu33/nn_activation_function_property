@@ -1,17 +1,19 @@
+# Principle
+Suppose $`X_1, X_2, \dots,X_k`$ and $`Y`$ are uniformly distributed random vectors on the n-dimensional unit sphere.
+We try to compare the minimum value of
+```math
+E[\min || Y - \sum_{i=1}^k w_i X_i ||^2]
+```
+with
+```math
+E[\min || Y - \sigma(\sum_{i=1}^{k-1} w_i X_i) - b ||^2]
+```
+where $`sigma`$ is a non-linear function and $`w_i`$ is random variables depedent on $`X_i, Y`$.
+
 # How to
 ```shell
 python optimization.py --activate tf.sigmoid
 ```
-## Low Dimension Experiment
-We set n=3, k=2, repeat 500  times; each time trains for 400 epochs.
-
-| activation function    | average loss |
-|------------------------|--------------|
-| none                   | 0.333        |
-| tf.sigmoid             | 0.785        |
-| tf.tanh                | 0.331        |
-| tf.nn.relu             | 0.850        |
-| tf.nn.relu6            | 0.828        |
 
 We found:
 1. If the activation function is nonnegative, the result is worst even with a constant bias.
