@@ -6,10 +6,13 @@ import tensorflow as tf
 import unittest
 import argparse
 # This is a sample program to explore the property of non-linear activation
-METHOD_NAME = ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6']
+METHOD_NAME = ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6', 'cubic']
 TRAIN_TIMES = 100
 n = 3
 k = 2
+def cubic(x):
+    return tf.add(x, tf.pow(x, tf.constant(3)))
+
 def build_model(x, y, activate=False):
     w = tf.get_variable('w', [k,1], dtype=tf.float64, initializer=tf.zeros_initializer)    
     unactivated_term = tf.matmul(x, w)
