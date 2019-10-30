@@ -7,12 +7,15 @@ import tensorflow as tf
 import unittest
 import argparse
 # This is a sample program to explore the property of non-linear activation
-METHOD_NAME = ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6', 'cubic']
+METHOD_NAME = ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6', 'cubic', 'quandratic']
 TRAIN_TIMES = 100
 n = 3
 k = 2
 def cubic(x):
     return tf.add(x, tf.multiply(tf.constant(0.05, dtype=tf.float64), tf.pow(x, tf.constant(3, dtype=tf.float64))))
+
+def quadratic(x):
+    return tf.add(x, tf.multiply(tf.constant(0.05, dtype=tf.float64), tf.pow(x, tf.constatnt(2, dtype=tf.float64)))
 
 def build_model(x, y, activate=False):
     w = tf.get_variable('w', [k,1], dtype=tf.float64, initializer=tf.zeros_initializer)    
