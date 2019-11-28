@@ -48,7 +48,8 @@ def assign_linear_weight(x_t, y_t, model):
         w = x.T @ y
         w_t = tf.global_variables()[0]
         w_t = tf.assign(w_t, w)
-        return model.eval()
+        model_value = model.eval()
+    return model_value
 
 def get_spherical_coordinate():
     '''see https://math.stackexchange.com/questions/444700/uniform-distribution-on-the-surface-of-unit-sphere 
