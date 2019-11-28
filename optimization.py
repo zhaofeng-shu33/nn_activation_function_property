@@ -40,7 +40,7 @@ def train_model(loss):
         _, loss_value = sess.run((train, loss))
     return loss_value  
 
-def assign_linear_weight(x_t, y_t):
+def assign_linear_weight(x_t, y_t, model):
     sess = tf.Session()
     with sess.as_default():
         x = x_t.eval()
@@ -71,7 +71,7 @@ def model_run(activate=False):
     x_t, y_t = generate_uniform_sample()
     loss = build_model(x_t, y_t, activate)
     if activate == False:
-        loss_value = assign_linear_weight(x_t, y_t)
+        loss_value = assign_linear_weight(x_t, y_t, loss)
     else:
         loss_value = train_model(loss)
     return loss_value
