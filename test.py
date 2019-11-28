@@ -1,4 +1,5 @@
 import unittest
+import numpy as np
 from optimization import get_spherical_coordinate
 from optimization import generate_uniform_sample
 
@@ -8,8 +9,8 @@ class TestFunc(unittest.TestCase):
         self.assertAlmostEqual(np.linalg.norm(arr), 1.0)
     def test_generate_uniform_sample(self):
         x_t, y_t = generate_uniform_sample()
-        self.assertEqual(x_t.shape, (3,2))
-        self.assertEqual(y_t.shape, (3,1))
+        self.assertEqual(x_t.shape.as_list(), [3, 2])
+        self.assertEqual(y_t.shape.as_list(), [3, 1])
         
 if __name__ == '__main__':
     unittest.main()

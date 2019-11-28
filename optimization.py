@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import json
 import numpy as np
+import scipy
 os.environ['CUDA_VISIBLE_DEVICES']=''
 import tensorflow as tf
 import unittest
@@ -70,7 +71,7 @@ def generate_uniform_sample():
     spherical_coordinate = get_spherical_coordinate()
     y = tf.constant(spherical_coordinate, shape=(n, 1))
     x_np_array = get_orthogonal_coordinate()
-    x = tf.constant(x_np_array.T)
+    x = tf.constant(x_np_array)
     return (x, y)
 
 def model_run(activate=False):
