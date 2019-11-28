@@ -58,12 +58,18 @@ def get_spherical_coordinate():
     normal_list = np.random.normal(size=n)
     return normal_list / np.linalg.norm(normal_list)
 
+def get_orthogonal_coordinate():
+    z = scipy.randn(n, n) # n by n random matrix
+    q, r = np.linalg.qr(z)
+    d = np.diagonal(r)
+    ph = d / np.absolute(d)
+    q = np.multiply(q, ph)
+    return q[:,:k]
+
 def generate_uniform_sample():
     spherical_coordinate = get_spherical_coordinate()
     y = tf.constant(spherical_coordinate, shape=(n, 1))
-    x_np_array = np.zeros([k,n])
-    for i in range(k):
-        x_np_array[i,:] = get_spherical_coordinate()
+    x_np_array = get_orthogonal_coordinate()
     x = tf.constant(x_np_array.T)
     return (x, y)
 
