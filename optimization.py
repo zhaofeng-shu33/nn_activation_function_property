@@ -89,14 +89,7 @@ def get_average(num_times, activate=False):
         total_value += model_run(activate)
     return total_value / num_times;
 
-class TestFunc(unittest.TestCase):
-    def test_get_spherical_coordinate(self):
-        arr = get_spherical_coordinate()
-        self.assertAlmostEqual(np.linalg.norm(arr), 1.0)
-    def test_generate_uniform_sample(self):
-        x_t, y_t = generate_uniform_sample()
-        self.assertEqual(x_t.shape, (3,2))
-        self.assertEqual(y_t.shape, (3,1))
+
 
 def task(method_name, num_times, q):
     activate_inner = eval(method_name)
