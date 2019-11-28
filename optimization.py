@@ -47,7 +47,7 @@ def assign_linear_weight(x_t, y_t, model):
         y = y_t.eval()
         w = x.T @ y
         w_t = tf.global_variables()[0]
-        tf.run(w_t.assign(w))
+        w_t.assign(w).eval()
         model_value = model.eval()
     return model_value
 
