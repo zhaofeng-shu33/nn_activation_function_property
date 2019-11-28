@@ -40,6 +40,16 @@ def train_model(loss):
         _, loss_value = sess.run((train, loss))
     return loss_value  
 
+def assign_linear_weight(x_t, y_t):
+    sess = tf.Session()
+    with sess.as_default():
+        x = x_t.eval()
+        y = y_t.eval()
+        w = x.T @ y
+        w_t = tf.global_variables()[0]
+        w_t = tf.assign(w_t, w)
+        return model.eval()
+
 def get_spherical_coordinate():
     '''see https://math.stackexchange.com/questions/444700/uniform-distribution-on-the-surface-of-unit-sphere 
        for detail
@@ -60,7 +70,10 @@ def model_run(activate=False):
     tf.reset_default_graph()
     x_t, y_t = generate_uniform_sample()
     loss = build_model(x_t, y_t, activate)
-    loss_value = train_model(loss)
+    if activate == False:
+        loss_value = assign_linear_weight(x_t, y_t)
+    else:
+        loss_value = train_model(loss)
     return loss_value
 
 def get_average(num_times, activate=False):
