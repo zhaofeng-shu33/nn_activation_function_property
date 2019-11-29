@@ -88,7 +88,7 @@ def get_average(num_times, activate=False):
     total_value = 0
     for i in range(num_times):
         total_value += model_run(activate)
-    return total_value / num_times;
+    return total_value / num_times
 
 
 
