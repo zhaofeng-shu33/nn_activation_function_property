@@ -20,4 +20,12 @@ We found:
 1. If the activation function is nonnegative, the result is worst even with a constant bias.
 1. `tf.tanh` is a little bit better than the case with no activation function.
 
+## Test Results
+```shell
+python3 verification_z_norm.py --n 60 --k 40 --sample_times=6000 --epsilon 0.1 --w_hat_estimate
+# result is 0.331
+python3 verification_z_norm.py --n 60 --k 40 --sample_times=6000 --epsilon 0.0 --w_hat_estimate
+# result is 0.333 (theoretical results also)
+```
+The improvement is $`-\epsilon^2 (1-r)`$, which is consistent with theoretical results.
 

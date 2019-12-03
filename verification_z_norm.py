@@ -97,7 +97,7 @@ if __name__ == '__main__':
     parser.add_argument('--epsilon', type=float, default=0.05)
     parser.add_argument('--verify_A_2', type=bool, default=False, const=True, nargs='?')
     parser.add_argument('--get_crossover', type=bool, default=False, const=True, nargs='?')
-    parser.add_argument('--w_hat_estimate', type=bool, default=False, const=True, nargs='?')
+    parser.add_argument('--w_hat_estimate', type=bool, default=False, const=True, nargs='?', help="non linear mse")
     parser.add_argument('--coefficient_epsilon_2', type=bool, default=False, const=True, nargs='?')
     np.random.seed(0)
     args = parser.parse_args()
