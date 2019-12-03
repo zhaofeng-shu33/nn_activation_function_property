@@ -92,14 +92,15 @@ if __name__ == '__main__':
     parser.add_argument('--get_crossover', type=bool, default=False, const=True, nargs='?')
     parser.add_argument('--w_hat_estimate', type=bool, default=False, const=True, nargs='?')
     parser.add_argument('--coefficient_epsilon_2', type=bool, default=False, const=True, nargs='?')
-
+    np.random.seed(0)
     args = parser.parse_args()
     optimization.n = args.n
     optimization.k = args.k
     optimization.epsilon = args.epsilon
     if args.coefficient_epsilon_2:
         result = evaluate_coefficient_epsilon_2(args.sample_times)
-    if args.w_hat_estimate:
+        print(result)
+    elif args.w_hat_estimate:
         result = evaluate_w_hat_estimate(args.sample_times)
         print(result)
     elif args.get_crossover:
