@@ -9,11 +9,11 @@ def generate_z_instance(x, y):
 
 def poly(z):
     r = optimization.k * 1.0 / optimization.n
-    return (optimization.n * z * z / r - 1) / np.sqrt(2)
+    return (optimization.n * z * z / r - 1) / np.sqrt(2 * optimization.n)
 
 def derivative_poly(z):
     r = optimization.k * 1.0 / optimization.n
-    diagonal_terms = np.sqrt(2) * optimization.n * z / r
+    diagonal_terms = np.sqrt(2) * np.sqrt(optimization.n) * z / r
     return np.diag(diagonal_terms)
 
 def sigma(z):
@@ -35,6 +35,13 @@ def get_coeff_epsilon_2(x, y, w_hat):
     part_2 = derivative_poly(z) @ x @ w_hat
     part_2 = part_2.T @ (y - z)
     return part_1 - 2 * part_2
+
+def get_coeff_epsilon_2_theoretical(x, y):
+    z = generate_z_instance(x, y)
+    xi_z = poly(z)
+    I_1 = np.linalg.norm(xi_z) ** 2
+    I_2 = np.linalg.norm(x.T @ xi_z) ** 2
+    # I_3 = 
 
 def evaluate_coefficient_epsilon_2(num_times):
     total_value = 0
@@ -112,5 +119,5 @@ if __name__ == '__main__':
         print(np.average(np.diag(result)))
     else:
         result = get_average(args.sample_times)
-        print(result / optimization.n)
+        print(result)
 
