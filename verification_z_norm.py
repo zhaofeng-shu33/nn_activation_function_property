@@ -16,6 +16,9 @@ def derivative_poly(z):
     diagonal_terms = np.sqrt(2) * optimization.n * z / r
     return np.diag(diagonal_terms)
 
+def sigma(z):
+    return z + optimization.epsilon * poly(z)
+
 def get_w_hat(x, y):
     z = generate_z_instance(x, y)
     w_hat = x.T @ (derivative_poly(z) @ (y-z) - poly(z))
@@ -26,13 +29,29 @@ def get_w_estimate(x, y):
     w = w_bar + optimization.epsilon * get_w_hat(x, y)
     return w 
 
+def get_coeff_epsilon_2(x, y, w_hat):
+    z = generate_z_instance(x, y)
+    part_1 = np.linalg.norm(x @ w_hat + poly(z)) ** 2
+    part_2 = derivative_poly(z) @ x @ w_hat
+    part_2 = part_2.T @ (y - z)
+    return part_1 - 2 * part_2
+
+def evaluate_coefficient_epsilon_2(num_times):
+    total_value = 0
+    for i in range(num_times):
+        y = get_spherical_coordinate()
+        x = get_orthogonal_coordinate()
+        w_hat = get_w_hat(x, y)
+        total_value += get_coeff_epsilon_2(x, y, w_hat)
+    return total_value / num_times
+
 def evaluate_w_hat_estimate(num_times):
     total_value = 0
     for i in range(num_times):
         y = get_spherical_coordinate()
         x = get_orthogonal_coordinate()
         w = get_w_estimate(x, y)
-        total_value += np.linalg.norm(y - x @ w) ** 2
+        total_value += np.linalg.norm(y - sigma(x @ w)) ** 2
     return total_value / num_times
 
 def get_average(num_times):
@@ -72,11 +91,14 @@ if __name__ == '__main__':
     parser.add_argument('--verify_A_2', type=bool, default=False, const=True, nargs='?')
     parser.add_argument('--get_crossover', type=bool, default=False, const=True, nargs='?')
     parser.add_argument('--w_hat_estimate', type=bool, default=False, const=True, nargs='?')
+    parser.add_argument('--coefficient_epsilon_2', type=bool, default=False, const=True, nargs='?')
 
     args = parser.parse_args()
     optimization.n = args.n
     optimization.k = args.k
     optimization.epsilon = args.epsilon
+    if args.coefficient_epsilon_2:
+        result = evaluate_coefficient_epsilon_2(args.sample_times)
     if args.w_hat_estimate:
         result = evaluate_w_hat_estimate(args.sample_times)
         print(result)
