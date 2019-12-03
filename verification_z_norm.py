@@ -4,25 +4,34 @@ import optimization
 from optimization import get_orthogonal_coordinate, get_spherical_coordinate
 # verify the norm = 1 constraint: python3 verification_z_norm.py --n 180 --k 120
 # consistent with commit ebf3c05 of  https://gitee.com/freewind201301/non-linear-activation-function
+activate = None
+derivative_activate = None
+
 def generate_z_instance(x, y):
     A = x @ x.T
     return A @ y
 
-def poly(z):
+def poly2(z):
     r = optimization.k * 1.0 / optimization.n
     return (optimization.n * z * z / r - 1) / np.sqrt(2 * optimization.n)
 
-def derivative_poly(z):
+def derivative_poly2(z):
     r = optimization.k * 1.0 / optimization.n
     diagonal_terms = np.sqrt(2) * np.sqrt(optimization.n) * z / r
     return np.diag(diagonal_terms)
 
+def sigmoid(z):
+    return 1 / (1 + np.exp(-z));
+
+def derivative_sigmoid(z):
+    return np.exp(z) / ((1 + np.exp(z)) ** 2)
+
 def sigma(z):
-    return z + optimization.epsilon * poly(z)
+    return z + optimization.epsilon * activate(z)
 
 def get_w_hat(x, y):
     z = generate_z_instance(x, y)
-    w_hat = x.T @ (derivative_poly(z) @ (y-z) - poly(z))
+    w_hat = x.T @ (derivative_activate(z) @ (y-z) - activate(z))
     return w_hat
 
 def get_w_estimate(x, y):
@@ -32,14 +41,14 @@ def get_w_estimate(x, y):
 
 def get_coeff_epsilon_2(x, y, w_hat):
     z = generate_z_instance(x, y)
-    part_1 = np.linalg.norm(x @ w_hat + poly(z)) ** 2
-    part_2 = derivative_poly(z) @ x @ w_hat
+    part_1 = np.linalg.norm(x @ w_hat + activate(z)) ** 2
+    part_2 = derivative_activate(z) @ x @ w_hat
     part_2 = part_2.T @ (y - z)
     return part_1 - 2 * part_2
 
 def get_coeff_epsilon_2_theoretical(x, y):
     z = generate_z_instance(x, y)
-    xi_z = poly(z)
+    xi_z = activate(z)
     I_1 = np.linalg.norm(xi_z) ** 2
     I_2 = np.linalg.norm(x.T @ xi_z) ** 2
     # I_3 = 
@@ -68,7 +77,7 @@ def get_average(num_times):
         y = get_spherical_coordinate()
         x = get_orthogonal_coordinate()
         z = generate_z_instance(x, y)
-        xi_z = poly(z)
+        xi_z = activate(z)
         total_value += np.linalg.norm(xi_z) ** 2 
     return total_value / num_times
 
@@ -100,8 +109,12 @@ if __name__ == '__main__':
     parser.add_argument('--get_crossover', type=bool, default=False, const=True, nargs='?')
     parser.add_argument('--w_hat_estimate', type=bool, default=False, const=True, nargs='?', help="non linear mse")
     parser.add_argument('--coefficient_epsilon_2', type=bool, default=False, const=True, nargs='?')
+    parser.add_argument('--activate', default='poly2')
     np.random.seed(0)
     args = parser.parse_args()
+    exec('activate = ' + args.activate)
+    exec('derivative_activate = derivative_' + args.activate)
+
     optimization.n = args.n
     optimization.k = args.k
     optimization.epsilon = args.epsilon
