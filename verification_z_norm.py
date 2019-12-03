@@ -2,7 +2,8 @@ import numpy as np
 import argparse
 import optimization
 from optimization import get_orthogonal_coordinate, get_spherical_coordinate
-# python3 verification_z_norm.py --n 180 --k 120
+# verify the norm = 1 constraint: python3 verification_z_norm.py --n 180 --k 120
+# consistent with commit ebf3c05 of  https://gitee.com/freewind201301/non-linear-activation-function
 def generate_z_instance(x, y):
     A = x @ x.T
     return A @ y
