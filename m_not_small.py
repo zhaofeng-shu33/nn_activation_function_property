@@ -13,13 +13,13 @@ def compute_N(i, j):
     result = np.exp(log_result) * n
     return result
 
-def compute_M(i, j):
+def compute_M_without_r(i, j):
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)
     r = k / n
     if t == 0:
-        return n * (1 - r)
+        return n
     elif t == 1:
         return 0
     else:
@@ -28,9 +28,37 @@ def compute_M(i, j):
             numerator = (2 * s + k) * (2 * s - 1)
             denominator = (2 * s + n + 2) * n
             result *= (numerator / denominator)
-        result *= n * (1 - r) * (i - 1) * (j - 1)
+        result *= n * (i - 1) * (j - 1)
     return result
 
+def construct_N(m):
+    a = np.zeros([m + 1, m + 1])
+    for i in range(m + 1):
+        for j in range(m + 1):
+            if j < i:
+                a[i, j] = a[j, i]
+            else:
+                a[i, j] = compute_N(i, j)
+    return a
+
+def construct_M_without_r(m):
+    a = np.zeros([m + 1, m + 1])
+    for i in range(m + 1):
+        for j in range(m + 1):
+            if j < i:
+                a[i, j] = a[j, i]
+            else:
+                a[i, j] = compute_M_without_r(i, j)
+    return a
+
+def get_minimum(m):
+    N = construct_N(m)
+    M = construct_M_without_r(m)
+    U = np.linalg.cholesky(N).T
+    U_inv = np.linalg.inv(U)
+    M_trans = U_inv.T @ M @ U_inv
+    eig_val, _ = np.linalg.eig(M_trans)
+    return np.min(eig_val)
+
 if __name__ == '__main__':
-    print(compute_M(13, 14))
-    print(compute_M(4, 16))
+    print(get_minimum(2))
