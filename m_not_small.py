@@ -17,10 +17,9 @@ def compute_M_without_r(i, j):
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)
-    r = k / n
     if t == 0:
         return n
-    elif t == 1:
+    elif i == 1 or j == 1:
         return 0
     else:
         result = 1
@@ -61,4 +60,5 @@ def get_minimum(m):
     return np.min(eig_val)
 
 if __name__ == '__main__':
-    print(get_minimum(2))
+    for m in range(2, 10):
+        print(get_minimum(m))
