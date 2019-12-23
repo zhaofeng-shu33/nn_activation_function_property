@@ -54,6 +54,9 @@ def construct_M_without_r(m):
 def get_minimum(m):
     N = construct_N(m)
     M = construct_M_without_r(m)
+    return compute_result(M, N)
+
+def compute_result(M, N):
     U = np.linalg.cholesky(N).T
     U_inv = np.linalg.inv(U)
     M_trans = U_inv.T @ M @ U_inv
