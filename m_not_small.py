@@ -1,4 +1,7 @@
+# Usages: python m_not_small.py --n 240 --k 160 # -0.97
+# the result should be near -1
 import numpy as np
+import argparse
 k = 40
 n = 60
 def compute_N(i, j):
@@ -20,7 +23,7 @@ def compute_M_without_r(i, j):
     r = k / n
     if t == 0:
         return n
-    elif t == 1:
+    elif i == 1 or j == 1:
         return 0
     else:
         result = 1
@@ -64,4 +67,11 @@ def compute_result(M, N):
     return np.min(eig_val)
 
 if __name__ == '__main__':
-    print(get_minimum(2))
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n', type=int, default=60)
+    parser.add_argument('--k', type=int, default=40)
+    args = parser.parse_args()
+    n = args.n
+    k = args.k    
+    print(get_minimum(2)) # -0.92
+    
