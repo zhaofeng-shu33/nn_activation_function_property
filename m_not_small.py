@@ -2,8 +2,16 @@
 # the result should be near -1
 import numpy as np
 import argparse
+
 k = 40
 n = 60
+
+def double_factorial(n): 
+  
+    if (n == 0 or n == 1 or n == -1): 
+        return 1; 
+    return n * double_factorial(n - 2)
+
 def compute_N(i, j):
     if (i + j) % 2 == 1:
         return 0
@@ -15,6 +23,21 @@ def compute_N(i, j):
         log_result += np.log(numerator / denominator)
     result = np.exp(log_result) * n
     return result
+
+def compute_N_theoretical(i, j):
+    if (i + j) % 2 == 1:
+        return 0
+    return double_factorial(i + j - 1)
+
+def compute_M_without_r_theoretical(i, j):
+    if (i + j) % 2 == 1:
+        return 0
+    if i + j == 0:
+        return 1
+    elif i == 1 or j == 1:
+        return 0
+    else:
+        return (-1) * (i - 1) * (j - 1) * double_factorial(i + j - 3)
 
 def compute_M_without_r(i, j):
     if (i + j) % 2 == 1:
@@ -34,29 +57,37 @@ def compute_M_without_r(i, j):
         result *= n * (i - 1) * (j - 1)
     return result
 
-def construct_N(m):
+def construct_N(m, theoretical=False):
     a = np.zeros([m + 1, m + 1])
     for i in range(m + 1):
         for j in range(m + 1):
             if j < i:
                 a[i, j] = a[j, i]
+            elif theoretical:
+                a[i, j] = compute_N_theoretical(i, j)
             else:
                 a[i, j] = compute_N(i, j)
     return a
 
-def construct_M_without_r(m):
+def construct_M_without_r(m, theoretical=False):
     a = np.zeros([m + 1, m + 1])
     for i in range(m + 1):
         for j in range(m + 1):
             if j < i:
                 a[i, j] = a[j, i]
+            elif theoretical:
+                a[i, j] = compute_M_without_r_theoretical(i, j)
             else:
                 a[i, j] = compute_M_without_r(i, j)
     return a
 
-def get_minimum(m):
-    N = construct_N(m)
-    M = construct_M_without_r(m)
+def get_minimum(m, theoretical=False, filter_array=[]):
+    N = construct_N(m, theoretical)
+    M = construct_M_without_r(m, theoretical)
+    if len(filter_array) > 0:
+        M_f = M[:,filter_array][filter_array,:]
+        N_f = N[:,filter_array][filter_array,:]
+        return compute_result(M_f, N_f)
     return compute_result(M, N)
 
 def compute_result(M, N):
@@ -70,8 +101,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--n', type=int, default=60)
     parser.add_argument('--k', type=int, default=40)
+    parser.add_argument('--m', type=int, default=2)
+    parser.add_argument('--theoretical', default=False, type=bool,
+        nargs='?', const=True)
+    parser.add_argument('--filter', nargs='+', type=int, default=[])
     args = parser.parse_args()
     n = args.n
     k = args.k    
-    print(get_minimum(2)) # -0.92
+    print(get_minimum(args.m, args.theoretical, args.filter)) # -0.92
     
