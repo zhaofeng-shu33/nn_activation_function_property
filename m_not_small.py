@@ -80,21 +80,28 @@ def construct_M_without_r(m, theoretical=False):
                 a[i, j] = compute_M_without_r(i, j)
     return a
 
-def get_minimum(m, theoretical=False, filter_array=[]):
+def get_minimum(m, theoretical=False, filter_array=[], get_vector=False):
     N = construct_N(m, theoretical)
     M = construct_M_without_r(m, theoretical)
     if len(filter_array) > 0:
         M_f = M[:,filter_array][filter_array,:]
         N_f = N[:,filter_array][filter_array,:]
         return compute_result(M_f, N_f)
-    return compute_result(M, N)
+    return compute_result(M, N, get_vector)
 
-def compute_result(M, N):
+def compute_result(M, N, get_vector=False):
     U = np.linalg.cholesky(N).T
     U_inv = np.linalg.inv(U)
     M_trans = U_inv.T @ M @ U_inv
-    eig_val, _ = np.linalg.eig(M_trans)
-    return np.min(eig_val)
+    eig_val, eig_vector = np.linalg.eig(M_trans)
+    if not get_vector:
+        return np.min(eig_val)
+    min_val = 1000
+    for i in range(M.shape[0]):
+        if eig_val[i] < min_val:
+            min_val = eig_val[i]
+            min_vector = eig_vector[:,i]
+    return (min_val, min_vector)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
