@@ -19,7 +19,7 @@ def get_orthogonal_coordinate(n_, k_):
 def compute_A11(n_, k_, t): # E[A11^t]
     result = 1
     for i in range(0, t):
-        result *= (k_ + 2 * t) / (n_ + 2 * t)
+        result *= (k_ + 2 * i) / (n_ + 2 * i)
     return result
 
 def compute_A12(n_, k_, t, num_of_iteration = 1000): # E[A12^t] using MC simulation
