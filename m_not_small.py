@@ -12,15 +12,21 @@ def double_factorial(n):
         return 1; 
     return n * double_factorial(n - 2)
 
-def compute_N(i, j):
+def compute_N(i, j, new_api=False):
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)
     log_result = 0
-    for s in range(0, t):
-        numerator = (2 * s + k) * (2 * s + 1)
-        denominator = (2 * s + n) * n
-        log_result += np.log(numerator / denominator)
+    if 2 * t > n - k and (n - k) % 2 == 0 and new_api:
+        for r in range(0, int((n-k) / 2)):
+            numerator = k + 2 * r
+            denominator = k + 2 * t + 2 * r
+            log_result += np.log(numerator / denominator)
+    else:
+        for s in range(0, t):
+            numerator = (2 * s + k) * (2 * s + 1)
+            denominator = (2 * s + n) * n
+            log_result += np.log(numerator / denominator)
     result = np.exp(log_result) * n
     return result
 

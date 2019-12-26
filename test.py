@@ -4,6 +4,8 @@ import tensorflow as tf
 from optimization import get_spherical_coordinate
 from optimization import generate_uniform_sample
 
+import m_not_small
+
 class TestFunc(unittest.TestCase):
     def test_get_spherical_coordinate(self):
         arr = get_spherical_coordinate()
@@ -23,5 +25,12 @@ class TestFunc(unittest.TestCase):
             y = y_t.eval()
             self.assertAlmostEqual(np.linalg.norm(y), 1.0)
 
+class TestNij(unittest.TestCase):
+    def test_n_ij(self):
+        m_not_small.n = 10
+        m_not_small.k = 8
+        old_value = m_not_small.compute_N(2, 4, False)
+        new_value = m_not_small.compute_N(2, 4, True)
+        self.assertAlmostEqual(old_value, new_value)
 if __name__ == '__main__':
     unittest.main()
