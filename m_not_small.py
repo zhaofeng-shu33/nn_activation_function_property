@@ -1,10 +1,34 @@
 # Usages: python m_not_small.py --n 240 --k 160 # -0.97
 # the result should be near -1
-import numpy as np
 import argparse
+
+import numpy as np
+import scipy
 
 k = 40
 n = 60
+
+def get_orthogonal_coordinate(n_, k_):
+    z = scipy.randn(n_, n_) # n by n random matrix
+    q, r = np.linalg.qr(z)
+    d = np.diagonal(r)
+    ph = d / np.absolute(d)
+    q = np.multiply(q, ph)
+    return q[:2,:k_]
+    
+def compute_A11(n_, k_, t): # E[A11^t]
+    result = 1
+    for i in range(0, t):
+        result *= (k_ + 2 * t) / (n_ + 2 * t)
+    return result
+
+def compute_A12(n_, k_, t, num_of_iteration = 1000): # E[A12^t] using MC simulation
+    result = 0
+    for i in range(num_of_iteration):
+        v2 = get_orthogonal_coordinate(n_, k_)
+        value_base = v2[0,:] @ v2[1,:]
+        result += value_base ** t
+    return (result / num_of_iteration)
 
 def double_factorial(n): 
   
