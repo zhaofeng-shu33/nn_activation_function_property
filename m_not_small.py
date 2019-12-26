@@ -22,6 +22,8 @@ def compute_N(i, j, new_api=False):
             numerator = k + 2 * r
             denominator = k + 2 * t + 2 * r
             log_result += np.log(numerator / denominator)
+        for s in range(0, t):
+            log_result += np.log((2 * s + 1) / n)
     else:
         for s in range(0, t):
             numerator = (2 * s + k) * (2 * s + 1)
