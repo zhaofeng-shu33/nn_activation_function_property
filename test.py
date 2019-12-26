@@ -25,12 +25,27 @@ class TestFunc(unittest.TestCase):
             y = y_t.eval()
             self.assertAlmostEqual(np.linalg.norm(y), 1.0)
 
-class TestNij(unittest.TestCase):
+class TestMN(unittest.TestCase):
     def test_n_ij(self):
         m_not_small.n = 10
         m_not_small.k = 8
         old_value = m_not_small.compute_N(2, 4, False)
         new_value = m_not_small.compute_N(2, 4, True)
         self.assertAlmostEqual(old_value, new_value)
+    def test_m_ij(self):
+        m_not_small.n = 10
+        m_not_small.k = 8
+        old_value = m_not_small.compute_M_without_r(2, 4, False)
+        new_value = m_not_small.compute_M_without_r(2, 4, True)
+        self.assertAlmostEqual(old_value, new_value)
+    def test_m_whole(self):
+        m_not_small.n = 10
+        m_not_small.k = 8
+        M = m_not_small.construct_M_without_r(2)
+        self.assertEqual(M.shape, (3, 3))
+        self.assertAlmostEqual(M[0, 0], 10)
+        self.assertAlmostEqual(M[0, 2], 2/3)
+        self.assertAlmostEqual(M[2, 2], -1/21)
+
 if __name__ == '__main__':
     unittest.main()

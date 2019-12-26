@@ -12,7 +12,7 @@ def double_factorial(n):
         return 1; 
     return n * double_factorial(n - 2)
 
-def compute_N(i, j, new_api=False):
+def compute_N(i, j, new_api=True):
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)
@@ -47,7 +47,7 @@ def compute_M_without_r_theoretical(i, j):
     else:
         return (-1) * (i - 1) * (j - 1) * double_factorial(i + j - 3)
 
-def compute_M_without_r(i, j):
+def compute_M_without_r(i, j, new_api=False):
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)
@@ -56,12 +56,23 @@ def compute_M_without_r(i, j):
     elif i == 1 or j == 1:
         return 0
     else:
-        result = 1
-        for s in range(0, t):
-            numerator = (2 * s + k) * (2 * s - 1)
-            denominator = (2 * s + n + 2) * n
-            result *= (numerator / denominator)
+        log_result = 0
+        if 2 * t > n - k + 2 and (n - k) % 2 == 0 and new_api:
+            for r in range(0, int((n-k) / 2) + 1):
+                numerator = k + 2 * r
+                denominator = k + 2 * t + 2 * r
+                log_result += np.log(numerator / denominator)
+            for s in range(0, t):
+                log_result += np.log(abs(2 * s - 1) / n)
+        else:
+            for s in range(0, t):
+                numerator = (2 * s + k) * abs(2 * s - 1)
+                denominator = (2 * s + n + 2) * n
+                log_result += np.log(numerator / denominator)
+        result = np.exp(log_result)
         result *= n * (i - 1) * (j - 1)
+        if t >= 1:
+            result = - result
     return result
 
 def construct_N(m, theoretical=False):
