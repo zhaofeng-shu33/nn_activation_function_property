@@ -22,13 +22,28 @@ def compute_A11(n_, k_, t): # E[A11^t]
         result *= (k_ + 2 * i) / (n_ + 2 * i)
     return result
 
-def compute_A12(n_, k_, t, num_of_iteration = 1000): # E[A12^t] using MC simulation
+def compute_A12_simulation(n_, k_, t, num_of_iteration = 1000): # E[A12^t] using MC simulation
     result = 0
     for i in range(num_of_iteration):
         v2 = get_orthogonal_coordinate(n_, k_)
         value_base = v2[0,:] @ v2[1,:]
         result += value_base ** t
     return (result / num_of_iteration)
+
+def compute_A_12(n_, k_, t):
+    if n_ != k_ + 1 or k_ != 1:
+        raise NotImplementedError("not supported (n, k) pairs: (%d, %d)" %(n_, k_))
+    result = 1 / (n_ - 2)
+    for i in range(k_):
+        numerator = 2 * i - 1
+        denominator = n_ - 2 + 2 * i
+        result *= (numerator / denominator)
+    for i in range(k_):
+        numerator = 2 * i + 1
+        denominator = n_ - 2 + 2 * (i + k_)
+        result *= (numerator / denominator)
+    result *= (n_ - 2 + 4 * k_)
+    return result
 
 def double_factorial(n): 
   
