@@ -30,19 +30,22 @@ def compute_A12_simulation(n_, k_, t, num_of_iteration = 1000): # E[A12^t] using
         result += value_base ** t
     return (result / num_of_iteration)
 
-def compute_A_12(n_, k_, t):
-    if n_ != k_ + 1 or k_ != 1:
+def compute_A12(n_, k_, t):
+    if n_ != k_ + 1 and k_ != 1:
         raise NotImplementedError("not supported (n, k) pairs: (%d, %d)" %(n_, k_))
+    if t % 2 == 1:
+        return 0
+    t_ = int(t / 2)
     result = 1 / (n_ - 2)
-    for i in range(k_):
-        numerator = 2 * i - 1
+    for i in range(t_):
+        numerator = 2 * i + 1
         denominator = n_ - 2 + 2 * i
         result *= (numerator / denominator)
-    for i in range(k_):
+    for i in range(t_):
         numerator = 2 * i + 1
-        denominator = n_ - 2 + 2 * (i + k_)
+        denominator = n_ - 2 + 2 * (i + t_)
         result *= (numerator / denominator)
-    result *= (n_ - 2 + 4 * k_)
+    result /= (n_ - 2 + 4 * t_)
     return result
 
 def double_factorial(n): 
