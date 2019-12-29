@@ -15,6 +15,20 @@ def poly2(z):
     r = optimization.k * 1.0 / optimization.n
     return (optimization.n * z * z / r - 1) / np.sqrt(2 * optimization.n)
 
+def poly(z, a):
+    result = np.zeros(len(z)) + a[0]
+    for i in range(1, len(a)):
+        result += a[i] * (z ** i)
+    return result
+
+def derivate_poly(z, a):
+    if len(a) < 2:
+        return np.zeros(len(z))
+    result = np.zeros(len(z)) + a[1]
+    for i in range(2, len(a)):
+        result += i * a[i] * (z ** (i - 1))
+    return result
+    
 def derivative_poly2(z):
     r = optimization.k * 1.0 / optimization.n
     diagonal_terms = np.sqrt(2) * np.sqrt(optimization.n) * z / r

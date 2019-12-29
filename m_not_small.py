@@ -48,17 +48,6 @@ def compute_A12(n_, k_, t):
     result /= (n_ - 2 + 4 * t_)
     return result
 
-def get_Mij_A12_term(n_, k_, i, j):
-    if i % 2 == 1 or j % 2 == 1:
-        return 0
-    t = int((i + j) / 2)
-    if t % 2 == 0:
-        return
-    max_term = np.min([i, j])
-    result = 0
-    s = i % 2 + 2
-    while s <= max_term:
-        result_inner = 
 def double_factorial(n): 
   
     if (n == 0 or n == 1 or n == -1): 
