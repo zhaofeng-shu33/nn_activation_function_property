@@ -21,7 +21,7 @@ def derivative_poly2(z):
     return np.diag(diagonal_terms)
 
 def sigmoid(z):
-    return 1 / (1 + np.exp(-z));
+    return 1 / (1 + np.exp(-z))
 
 def derivative_sigmoid(z):
     return np.exp(z) / ((1 + np.exp(z)) ** 2)
