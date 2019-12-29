@@ -27,8 +27,8 @@ def derivate_poly(z, a):
     result = np.zeros(len(z)) + a[1]
     for i in range(2, len(a)):
         result += i * a[i] * (z ** (i - 1))
-    return result
-    
+    return np.diag(result)
+
 def derivative_poly2(z):
     r = optimization.k * 1.0 / optimization.n
     diagonal_terms = np.sqrt(2) * np.sqrt(optimization.n) * z / r
@@ -51,8 +51,7 @@ def get_w_hat(x, y):
 def get_w_estimate(x, y):
     w_bar = x.T @ y
     w = w_bar + optimization.epsilon * get_w_hat(x, y)
-    return w 
-
+    return w
 def get_coeff_epsilon_2(x, y, w_hat):
     z = generate_z_instance(x, y)
     part_1 = np.linalg.norm(x @ w_hat + activate(z)) ** 2
@@ -65,7 +64,7 @@ def get_coeff_epsilon_2_theoretical(x, y):
     xi_z = activate(z)
     I_1 = np.linalg.norm(xi_z) ** 2
     I_2 = np.linalg.norm(x.T @ xi_z) ** 2
-    # I_3 = 
+    # I_3 =
 
 def evaluate_coefficient_epsilon_2(num_times):
     total_value = 0
@@ -92,8 +91,8 @@ def get_average(num_times):
         x = get_orthogonal_coordinate()
         z = generate_z_instance(x, y)
         xi_z = activate(z)
-        total_value += np.linalg.norm(xi_z) ** 2 
-    return total_value / num_times
+        total_value += np.linalg.norm(xi_z) ** 2
+        return total_value / num_times
 
 def get_matrix_average(num_times):
     n = optimization.n

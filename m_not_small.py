@@ -48,8 +48,7 @@ def compute_A12(n_, k_, t):
     result /= (n_ - 2 + 4 * t_)
     return result
 
-def double_factorial(n): 
-  
+def double_factorial(n):
     if (n == 0 or n == 1 or n == -1): 
         return 1; 
     return n * double_factorial(n - 2)
