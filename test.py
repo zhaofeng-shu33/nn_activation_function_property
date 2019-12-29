@@ -65,6 +65,11 @@ class TestPoly(unittest.TestCase):
         value_2 = verification_z_norm.derivate_poly(z, a)
         for i in range(4):
             self.assertAlmostEqual(value_1[i, i], value_2[i, i])
+    def test_coeff_epsilon_2_theoretical(self):
+        a2 = optimization.n ** 2 / optimization.k
+        q = np.array([-1, 0, a2]) / np.sqrt(2 * optimization.n)
+        C_xi_2 = verification_z_norm.get_coeff_epsilon_2_theoretical(q)
+        self.assertAlmostEqual(C_xi_2, -1/3)
 
 if __name__ == '__main__':
     unittest.main()

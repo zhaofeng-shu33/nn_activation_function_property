@@ -88,7 +88,7 @@ def compute_M_without_r_theoretical(i, j):
     else:
         return (-1) * (i - 1) * (j - 1) * double_factorial(i + j - 3)
 
-def compute_M_without_r(i, j, new_api=False, add_A12=False):
+def compute_M_without_r(i, j, new_api=False):
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)

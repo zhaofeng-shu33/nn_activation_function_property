@@ -2,6 +2,7 @@ import numpy as np
 import argparse
 import optimization
 from optimization import get_orthogonal_coordinate, get_spherical_coordinate
+import m_not_small
 # verify the norm = 1 constraint: python3 verification_z_norm.py --n 180 --k 120
 # consistent with commit ebf3c05 of  https://gitee.com/freewind201301/non-linear-activation-function
 activate = None
@@ -52,6 +53,7 @@ def get_w_estimate(x, y):
     w_bar = x.T @ y
     w = w_bar + optimization.epsilon * get_w_hat(x, y)
     return w
+
 def get_coeff_epsilon_2(x, y, w_hat):
     z = generate_z_instance(x, y)
     part_1 = np.linalg.norm(x @ w_hat + activate(z)) ** 2
@@ -59,12 +61,13 @@ def get_coeff_epsilon_2(x, y, w_hat):
     part_2 = part_2.T @ (y - z)
     return part_1 - 2 * part_2
 
-def get_coeff_epsilon_2_theoretical(x, y):
-    z = generate_z_instance(x, y)
-    xi_z = activate(z)
-    I_1 = np.linalg.norm(xi_z) ** 2
-    I_2 = np.linalg.norm(x.T @ xi_z) ** 2
-    # I_3 =
+def get_coeff_epsilon_2_theoretical(q):
+    p = np.zeros(len(q))
+    for i in range(len(q)):
+        p[i] = np.power(optimization.k, i/2) * q[i] / np.power(optimization.n, -0.5 + i)
+    m = len(q) - 1
+    M = m_not_small.construct_M_without_r(m, theoretical=True)
+    return (1 - optimization.k / optimization.n) * p @ M @ p
 
 def evaluate_coefficient_epsilon_2(num_times):
     total_value = 0
