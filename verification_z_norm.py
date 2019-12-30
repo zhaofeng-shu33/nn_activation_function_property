@@ -22,7 +22,7 @@ def poly(z, a):
         result += a[i] * (z ** i)
     return result
 
-def derivate_poly(z, a):
+def derivative_poly(z, a):
     if len(a) < 2:
         return np.zeros(len(z))
     result = np.zeros(len(z)) + a[1]

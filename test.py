@@ -62,7 +62,7 @@ class TestPoly(unittest.TestCase):
         a = np.array([-1, 0, a2]) / np.sqrt(2 * optimization.n)
         z = np.array([0, -1, 1, 3])
         value_1 = verification_z_norm.derivative_poly2(z)
-        value_2 = verification_z_norm.derivate_poly(z, a)
+        value_2 = verification_z_norm.derivative_poly(z, a)
         for i in range(4):
             self.assertAlmostEqual(value_1[i, i], value_2[i, i])
     def test_coeff_epsilon_2_theoretical(self):
