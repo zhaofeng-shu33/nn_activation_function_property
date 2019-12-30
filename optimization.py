@@ -55,11 +55,10 @@ def assign_linear_weight(x_t, y_t, model):
     return model_value
 
 def get_spherical_coordinate():
-    '''see https://math.stackexchange.com/questions/444700/uniform-distribution-on-the-surface-of-unit-sphere 
-       for detail
+    '''actually get normal distribution with sigma^2 = 1/n
     '''
     normal_list = np.random.normal(size=n)
-    return normal_list / np.linalg.norm(normal_list)
+    return normal_list / np.sqrt(n)
 
 def get_orthogonal_coordinate():
     z = scipy.randn(n, n) # n by n random matrix
