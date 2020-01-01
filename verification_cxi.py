@@ -31,7 +31,7 @@ if __name__ == '__main__':
     p = normalize(np.array(args.p))
     a = np.zeros(len(p))
     for i in range(len(p)):
-        a[i] = np.power(optimization.n, -0.5 + i) * p[i] / np.power(optimization.k, i/2)
+        a[i] = np.power(optimization.n / np.sqrt(optimization.k), i) * p[i] / np.sqrt(optimization.n)
 
     empirical_result = verification_z_norm.evaluate_coefficient_epsilon_2(args.sample_times)
     theoretical_result = verification_z_norm.get_coeff_epsilon_2_theoretical(a)

@@ -41,7 +41,7 @@ def set_poly_coefficient(p):
     global a
     a = np.zeros(len(p))
     for i in range(len(p)):
-        a[i] = np.power(optimization.n, -0.5 + i) * p[i] / np.power(optimization.k, i/2)
+        a[i] = np.power(optimization.n / np.sqrt(optimization.k), i) * p[i] / np.sqrt(optimization.n)
 
 def get_empirical_result(polys, sample_times):
     result_list = []
