@@ -70,14 +70,23 @@ def add_theoretical(dic):
 
 def plot_fixed_m(dic, save_fig=True, show=False):
     H = dic['Hermite']
-    x_axis = [i + 2 for i in range(len(H))]
+    x_axis = np.array([i + 2 for i in range(len(H))])
     plt.xlabel('degree of polynomials')
     plt.ylabel(r'$C[\xi]$').set_rotation(0)
-    for k, v in dic.items():
-        plt.plot(x_axis, v, label=k)
+    plt.scatter(x_axis, H, label='Hermite', color='r', marker='o')
+    if dic.get('theoretical'):
+        plt.plot(x_axis, dic['theoretical'],
+            label='Theoretical', color='r', linestyle='dashed')
+    if dic.get('Largest'):
+        plt.scatter(x_axis, dic['Largest'], label='Largest', color='b')
+        # least square fit for largest:
+        x_axis_expand = np.vstack([x_axis, np.ones(len(x_axis))]).T
+        slope, intercept = np.linalg.lstsq(x_axis_expand, dic['Largest'], rcond=None)[0]
+        plt.plot(x_axis, slope * x_axis + intercept,
+            label='LS fit', color='b', linestyle='dashed')
     plt.legend()
     if save_fig:
-        plt.savefig('build/fixed_m.eps')
+        plt.savefig('build/fixed_nk.eps')
     if show:
         plt.show()
 
