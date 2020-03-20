@@ -69,5 +69,11 @@ class TestPoly(unittest.TestCase):
         C_xi_2 = verification_z_norm.get_coeff_epsilon_2_theoretical(q)
         self.assertAlmostEqual(C_xi_2, -1/3)
 
+class TestEmpiricalNormalize(unittest.TestCase):
+    def test_empirical_normalize(self):
+        q_norm = verification_z_norm.empirical_normalize(1,
+                 np.array([-1, 0, 1]))
+        print(q_norm)
+ 
 if __name__ == '__main__':
     unittest.main()

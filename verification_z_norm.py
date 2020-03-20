@@ -61,6 +61,11 @@ def get_coeff_epsilon_2(x, y, w_hat):
     part_2 = part_2.T @ (y - z)
     return part_1 - 2 * part_2
 
+def get_C_1_value(x, y, q):
+    z = generate_z_instance(x, y)
+    z_poly = poly(z, q)
+    return np.linalg.norm(z_poly) ** 2
+
 def get_coeff_epsilon_2_theoretical(q):
     p = np.zeros(len(q))
     for i in range(len(q)):
@@ -68,6 +73,15 @@ def get_coeff_epsilon_2_theoretical(q):
     m = len(q) - 1
     M = m_not_small.construct_M_without_r(m, theoretical=True)
     return (1 - optimization.k / optimization.n) * p @ M @ p
+
+def empirical_normalize(num_times, q):
+    total_value = 0
+    for i in range(num_times):
+        y = get_spherical_coordinate()
+        x = get_orthogonal_coordinate()
+        total_value += get_C_1_value(x, y, q)
+    total_value /= num_times
+    return ( q / np.sqrt(total_value) )
 
 def evaluate_coefficient_epsilon_2(num_times):
     total_value = 0

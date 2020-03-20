@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/zhaofeng-shu33/nn_activation_function_property.svg?branch=master)](https://travis-ci.com/zhaofeng-shu33/nn_activation_function_property)
+
 # Principle
 Suppose $`X_1, X_2, \dots,X_k`$ and $`Y`$ are uniformly distributed random vectors on the n-dimensional unit sphere.
 These random vectors are indepently distributed.
