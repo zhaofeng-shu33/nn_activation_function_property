@@ -43,11 +43,17 @@ def set_poly_coefficient(p):
     for i in range(len(p)):
         a[i] = np.power(optimization.n / np.sqrt(optimization.k), i) * p[i] / np.sqrt(optimization.n)
 
-def get_empirical_result(polys, sample_times):
+def get_empirical_result(polys, sample_times, empirical_normalize=False):
     result_list = []
     for p in polys:
-        p_normalize = normalize(p)
+        if not empirical_normalize:
+            p_normalize = normalize(p)
+        else:
+            p_normalize = p
         set_poly_coefficient(p_normalize)
+        if empirical_normalize:
+            global a
+            a = verification_z_norm.empirical_normalize(sample_times, a)
         empirical_result = verification_z_norm.evaluate_coefficient_epsilon_2(sample_times)
         result_list.append(empirical_result)
     return result_list
@@ -98,6 +104,7 @@ if __name__ == '__main__':
     parser.add_argument('--mode', default='Hermite', choices=['Hermite', 'Theoretical', 'Largest', 'All'])
     parser.add_argument('--task', default='computation', choices=['plot', 'computation'])
     parser.add_argument('--show', default=False, type=bool, nargs='?', const=True)
+    parser.add_argument('--norm_empirical', default=False, type=bool, nargs='?', const=True)
     args = parser.parse_args()
     optimization.n = args.n
     optimization.k = args.k
@@ -107,12 +114,14 @@ if __name__ == '__main__':
         dic = {}
     if args.task == 'computation':
         if args.mode == 'Hermite' or args.mode == 'All':
-            empirical_result_list = get_empirical_result(Hermite, args.sample_times)
+            empirical_result_list = get_empirical_result(Hermite,
+                                    args.sample_times, args.norm_empirical)
             dic['Hermite'] = empirical_result_list
         if args.mode == 'Theoretical' or args.mode == 'All':
             add_theoretical(dic)
         if args.mode == 'Largest' or args.mode == 'All':
-            empirical_result_list = get_empirical_result(LargestTerm, args.sample_times)
+            empirical_result_list = get_empirical_result(LargestTerm,
+                                    args.sample_times, args.norm_empirical)
             dic['Largest'] = empirical_result_list
         save_result(dic)
     elif args.task == 'plot':
