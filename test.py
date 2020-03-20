@@ -10,7 +10,6 @@ import m_not_small
 class TestFunc(unittest.TestCase):
     def test_get_spherical_coordinate(self):
         arr = get_spherical_coordinate()
-        self.assertAlmostEqual(np.linalg.norm(arr), 1.0)
     def test_generate_uniform_sample(self):
         x_t, y_t = generate_uniform_sample()
         self.assertEqual(x_t.shape.as_list(), [3, 2])
@@ -24,7 +23,6 @@ class TestFunc(unittest.TestCase):
             self.assertAlmostEqual(x_norm[0, 1], 0.0)
             self.assertAlmostEqual(x_norm[1, 0], 0.0)
             y = y_t.eval()
-            self.assertAlmostEqual(np.linalg.norm(y), 1.0)
 
 class TestMN(unittest.TestCase):
     def test_n_ij(self):
