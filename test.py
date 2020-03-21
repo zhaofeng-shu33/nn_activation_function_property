@@ -26,20 +26,20 @@ class TestFunc(unittest.TestCase):
 
 class TestMN(unittest.TestCase):
     def test_n_ij(self):
-        m_not_small.n = 10
-        m_not_small.k = 8
+        optimization.n = 10
+        optimization.k = 8
         old_value = m_not_small.compute_N(2, 4, False)
         new_value = m_not_small.compute_N(2, 4, True)
         self.assertAlmostEqual(old_value, new_value)
     def test_m_ij(self):
-        m_not_small.n = 10
-        m_not_small.k = 8
+        optimization.n = 10
+        optimization.k = 8
         old_value = m_not_small.compute_M_without_r(2, 4, False)
         new_value = m_not_small.compute_M_without_r(2, 4, True)
         self.assertAlmostEqual(old_value, new_value)
     def test_m_whole(self):
-        m_not_small.n = 10
-        m_not_small.k = 8
+        optimization.n = 10
+        optimization.k = 8
         M = m_not_small.construct_M_without_r(2)
         self.assertEqual(M.shape, (3, 3))
         self.assertAlmostEqual(M[0, 0], 10)
@@ -67,7 +67,7 @@ class TestPoly(unittest.TestCase):
         a2 = optimization.n ** 2 / optimization.k
         q = np.array([-1, 0, a2]) / np.sqrt(2 * optimization.n)
         C_xi_2 = verification_z_norm.get_coeff_epsilon_2_theoretical(q)
-        self.assertAlmostEqual(C_xi_2, -1/3)
+        self.assertAlmostEqual(C_xi_2, -(1 - optimization.k / optimization.n))
 
 class TestEmpiricalNormalize(unittest.TestCase):
     def test_empirical_normalize(self):

@@ -4,9 +4,19 @@ import argparse
 
 import numpy as np
 import scipy
+from scipy.special import gamma
 
 import optimization
 
+def integrate(s, i, j):
+    n = optimization.n
+    k = optimization.k
+    if n < k + 2:
+        raise NotImplemented("numerical integration for "
+              "n = %d  < k + 2 not implemented" % n)
+    C0 = gamma(n/2) * gamma((n-1)/2)
+    C0 /= (gamma(0.5) * gamma(k/2) * gamma((k-1)/2) * gamma((n-k)/2) * gamma((n-k-1)/2))
+    
 
 def get_orthogonal_coordinate(n_, k_):
     z = scipy.randn(n_, n_) # n by n random matrix
