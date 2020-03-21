@@ -5,8 +5,8 @@ import argparse
 import numpy as np
 import scipy
 
-k = 40
-n = 60
+import optimization
+
 
 def get_orthogonal_coordinate(n_, k_):
     z = scipy.randn(n_, n_) # n by n random matrix
@@ -58,19 +58,20 @@ def compute_N(i, j, new_api=True):
         return 0
     t = int((i + j) / 2)
     log_result = 0
-    if 2 * t > n - k and (n - k) % 2 == 0 and new_api:
-        for r in range(0, int((n-k) / 2)):
-            numerator = k + 2 * r
-            denominator = k + 2 * t + 2 * r
+    n_minus_k = optimization.n - optimization.k
+    if 2 * t > n_minus_k and n_minus_k % 2 == 0 and new_api:
+        for r in range(0, int(n_minus_k / 2)):
+            numerator = optimization.k + 2 * r
+            denominator = optimization.k + 2 * t + 2 * r
             log_result += np.log(numerator / denominator)
         for s in range(0, t):
-            log_result += np.log((2 * s + 1) / n)
+            log_result += np.log((2 * s + 1) / optimization.n)
     else:
         for s in range(0, t):
-            numerator = (2 * s + k) * (2 * s + 1)
-            denominator = (2 * s + n) * n
+            numerator = (2 * s + optimization.k) * (2 * s + 1)
+            denominator = (2 * s + optimization.n) * optimization.n
             log_result += np.log(numerator / denominator)
-    result = np.exp(log_result) * n
+    result = np.exp(log_result) * optimization.n
     return result
 
 def compute_N_theoretical(i, j):
@@ -93,25 +94,26 @@ def compute_M_without_r(i, j, new_api=False):
         return 0
     t = int((i + j) / 2)
     if t == 0:
-        return n
+        return optimization.n
     elif i == 1 or j == 1:
         return 0
     else:
         log_result = 0
-        if 2 * t > n - k + 2 and (n - k) % 2 == 0 and new_api:
-            for r in range(0, int((n-k) / 2) + 1):
-                numerator = k + 2 * r
-                denominator = k + 2 * t + 2 * r
+        n_minus_k = optimization.n - optimization.k
+        if 2 * t > n_minus_k + 2 and n_minus_k % 2 == 0 and new_api:
+            for r in range(0, int(n_minus_k / 2) + 1):
+                numerator = optimization.k + 2 * r
+                denominator = optimization.k + 2 * t + 2 * r
                 log_result += np.log(numerator / denominator)
             for s in range(0, t):
-                log_result += np.log(abs(2 * s - 1) / n)
+                log_result += np.log(abs(2 * s - 1) / optimization.n)
         else:
             for s in range(0, t):
-                numerator = (2 * s + k) * abs(2 * s - 1)
-                denominator = (2 * s + n + 2) * n
+                numerator = (2 * s + optimization.k) * abs(2 * s - 1)
+                denominator = (2 * s + optimization.n + 2) * optimization.n
                 log_result += np.log(numerator / denominator)
         result = np.exp(log_result)
-        result *= n * (i - 1) * (j - 1)
+        result *= optimization.n * (i - 1) * (j - 1)
         if t >= 1:
             result = - result
     return result
@@ -172,7 +174,7 @@ if __name__ == '__main__':
         nargs='?', const=True)
     parser.add_argument('--filter', nargs='+', type=int, default=[])
     args = parser.parse_args()
-    n = args.n
-    k = args.k    
+    optimization.n = args.n
+    optimization.k = args.k
     print(get_minimum(args.m, args.theoretical, args.filter)) # -0.92
     
