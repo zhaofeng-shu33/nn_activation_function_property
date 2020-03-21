@@ -9,14 +9,6 @@ from scipy.integrate import tplquad
 
 import optimization
 
-def z_bound(x, y):
-    z_1 = x * y
-    z_2 = 1 - x - y + x * y
-    if z_1 < z_2:
-        return np.sqrt(z_1)
-    else:
-        return np.sqrt(z_2)
-
 def integrate(s, i, j):
     n = optimization.n
     k = optimization.k
@@ -25,8 +17,8 @@ def integrate(s, i, j):
               "n = %d  < k + 2 not implemented" % n)
     C0 = 2 * gamma(n/2) * gamma((n-1)/2)
     C0 /= (gamma(0.5) * gamma(k/2) * gamma((k-1)/2) * gamma((n-k)/2) * gamma((n-k-1)/2))
-    C0 *= tplquad(lambda x,y,z: (x*y-z**2)**((k-3)/2) * (1-x-y+x*y-z**2)**((n-k-3)/2), 0, 1, lambda x: 0,
-                   lambda x: 1, lambda x,y: 0, lambda x,y: z_bound(x, y))[0]
+    C0 *= tplquad(lambda x,y,z: abs(x*y-z**2)**((k-3)/2) * abs(1-x-y+x*y-z**2)**((n-k-3)/2), 0, 1, lambda x: 0,
+                   lambda x: 1, lambda x,y: 0, lambda x,y: np.sqrt(np.min([x*y,1-x-y+x*y])))[0]
     return C0
 
 def get_orthogonal_coordinate(n_, k_):
