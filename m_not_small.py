@@ -129,7 +129,11 @@ def compute_M_without_r(i, j, new_api=False):
         result *= optimization.n * (i - 1) * (j - 1)
         if t >= 1:
             result = - result
+    result += get_minus_M2(i, j)
     return result
+
+def get_minus_M2(i, j):
+    return 0
 
 def construct_N(m, theoretical=False):
     a = np.zeros([m + 1, m + 1])
