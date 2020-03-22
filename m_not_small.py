@@ -157,9 +157,9 @@ def M2_term(i, j, s):
     return coeff
 
 def numerical_integration(n, k, x_p, y_p, z_p):
-    if n < k + 2:
+    if n < k + 3 or k < 3:
         raise NotImplemented("numerical integration for "
-              "n = %d  < k + 2 not implemented" % n)
+              "n = %d  < k + 3 not allowed" % n)
     cmd = 'bash /home/feng/non-linear-activation-function/build/matlab_integration/for_testing/run_matlab_integration.sh /cm/shared/apps/matlab {0} {1} {2} {3} {4}'.format(n, k, x_p, y_p, z_p)
     output_obj = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
     number_str = output_obj.stdout.decode('utf-8').split('\n')[-2]
