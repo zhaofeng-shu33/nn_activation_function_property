@@ -1,6 +1,7 @@
 # Usages: python m_not_small.py --n 240 --k 160 # -0.97
 # the result should be near -1
 import argparse
+from math import factorial
 
 import numpy as np
 import scipy
@@ -9,15 +10,14 @@ from scipy.integrate import tplquad
 
 import optimization
 
-def integrate(s, i, j):
-    n = optimization.n
-    k = optimization.k
+def numerical_integration_false(n, k, x_p, y_p, z_p):
+    # this function cannot produce right result in practice, do not use it
     if n < k + 2:
         raise NotImplemented("numerical integration for "
               "n = %d  < k + 2 not implemented" % n)
     C0 = 2 * gamma(n/2) * gamma((n-1)/2)
     C0 /= (gamma(0.5) * gamma(k/2) * gamma((k-1)/2) * gamma((n-k)/2) * gamma((n-k-1)/2))
-    C0 *= tplquad(lambda x,y,z: abs(x*y-z**2)**((k-3)/2) * abs(1-x-y+x*y-z**2)**((n-k-3)/2), 0, 1, lambda x: 0,
+    C0 *= tplquad(lambda x,y,z: x**x_p * y**y_p * z**z_p * abs(x*y-z**2)**((k-3)/2) * abs(1-x-y+x*y-z**2)**((n-k-3)/2), 0, 1, lambda x: 0,
                    lambda x: 1, lambda x,y: 0, lambda x,y: np.sqrt(np.min([x*y,1-x-y+x*y])))[0]
     return C0
 
@@ -133,6 +133,33 @@ def compute_M_without_r(i, j, new_api=False):
     return result
 
 def get_minus_M2(i, j):
+    t = (i + j) / 2
+    coeff = (optimization.n - 1) * optimization.n ** (t - 1)
+    min_i_j = np.min([i, j])
+    M2_acc = 0
+    for s in range(0, min_i_j + 1):
+        M2_acc += M2_term(i, j, s)    
+    return -1 * coeff * M2_acc
+
+def M2_term(i, j, s):
+    if (i + s) % 2 == 1:
+        return 0
+    elif s % 2 == 0:
+        return 0
+    coeff = factorial(i) / factorial(s)
+    coeff *= factorial(j) / double_factorial(i - s)
+    coeff *= (1 - s) / double_factorial(j - s)
+    x_p = (i - s) / 2
+    y_p = (j - s) / 2
+    z_p = s + 1
+    coeff *= numerical_integration(optimization.n, optimization.k, x_p, y_p, z_p) 
+    return coeff
+
+def numerical_integration(n, k, x_p, y_p, z_p):
+    if n < k + 2:
+        raise NotImplemented("numerical integration for "
+              "n = %d  < k + 2 not implemented" % n)
+
     return 0
 
 def construct_N(m, theoretical=False):
