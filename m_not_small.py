@@ -135,7 +135,7 @@ def compute_M_without_r(i, j, new_api=False):
 
 def get_minus_M2(i, j):
     t = (i + j) / 2
-    coeff = (optimization.n - 1) * optimization.n ** (t - 1)
+    coeff = (optimization.n - 1) / optimization.n ** (t - 1)
     min_i_j = np.min([i, j])
     M2_acc = 0
     for s in range(0, min_i_j + 1):
