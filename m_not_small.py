@@ -2,6 +2,7 @@
 # the result should be near -1
 import argparse
 from math import factorial
+import subprocess
 
 import numpy as np
 import scipy
@@ -159,8 +160,10 @@ def numerical_integration(n, k, x_p, y_p, z_p):
     if n < k + 2:
         raise NotImplemented("numerical integration for "
               "n = %d  < k + 2 not implemented" % n)
-
-    return 0
+    cmd = 'bash /home/feng/non-linear-activation-function/build/matlab_integration/for_testing/run_matlab_integration.sh /cm/shared/apps/matlab {0} {1} {2} {3} {4}'.format(n, k, x_p, y_p, z_p)
+    output_obj = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
+    number_str = output_obj.stdout.decode('utf-8').split('\n')[-2]
+    return float(number_str)
 
 def construct_N(m, theoretical=False):
     a = np.zeros([m + 1, m + 1])
