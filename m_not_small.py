@@ -7,20 +7,11 @@ import subprocess
 import numpy as np
 import scipy
 from scipy.special import gamma
+from scipy.special import binom
 from scipy.integrate import tplquad
 
 import optimization
 
-def numerical_integration_false(n, k, x_p, y_p, z_p):
-    # this function cannot produce right result in practice, do not use it
-    if n < k + 2:
-        raise NotImplemented("numerical integration for "
-              "n = %d  < k + 2 not implemented" % n)
-    C0 = 2 * gamma(n/2) * gamma((n-1)/2)
-    C0 /= (gamma(0.5) * gamma(k/2) * gamma((k-1)/2) * gamma((n-k)/2) * gamma((n-k-1)/2))
-    C0 *= tplquad(lambda x,y,z: x**x_p * y**y_p * z**z_p * abs(x*y-z**2)**((k-3)/2) * abs(1-x-y+x*y-z**2)**((n-k-3)/2), 0, 1, lambda x: 0,
-                   lambda x: 1, lambda x,y: 0, lambda x,y: np.sqrt(np.min([x*y,1-x-y+x*y])))[0]
-    return C0
 
 def get_orthogonal_coordinate(n_, k_):
     z = scipy.randn(n_, n_) # n by n random matrix
@@ -156,14 +147,36 @@ def M2_term(i, j, s):
     coeff *= numerical_integration(optimization.n, optimization.k, x_p, y_p, z_p) 
     return coeff
 
+def multiply_add_2(start, offset):
+    val = 1
+    for j in range(0, offset + 1):
+        val *= (start + 2 * j)
+    return val
+
+def numerical_integration_inner(n, k, _t, _m, _r, i):
+    val = binom(_r, i)
+    val *= multiply_add_2(2* _t + 1, i - 1)
+    val *= multiply_add_2(k - 1, _r - i - 1)
+    val /= multiply_add_2(n + 2 * (2 * _t + _m), i - 1)
+    val *= multiply_add_2(n - k + 2 * _t, i - 1)
+    return val
+
 def numerical_integration(n, k, x_p, y_p, z_p):
-    if n < k + 3 or k < 3:
-        raise NotImplemented("numerical integration for "
-              "n = %d  < k + 3 not allowed" % n)
-    cmd = 'bash /home/feng/non-linear-activation-function/build/matlab_integration/for_testing/run_matlab_integration.sh /cm/shared/apps/matlab {0} {1} {2} {3} {4}'.format(n, k, x_p, y_p, z_p)
-    output_obj = subprocess.run(cmd, shell=True, stdout=subprocess.PIPE)
-    number_str = output_obj.stdout.decode('utf-8').split('\n')[-2]
-    return float(number_str)
+    if x_p < y_p:
+        _r = x_p
+        _m = y_p
+    else:
+        _r = y_p
+        _m = x_p
+    _t = z_p / 2
+    val = double_factorial(z_p - 1)
+    val *= multiply_add_2(n - k, _t - 1) / multiply_add_2(n - 1, _t + _r - 1)
+    val *= multiply_add_2(k, _t + _m - 1) / multiply_add_2(n, 2 * _t + _m - 1)
+    val_inner = 0
+    for i in range(0, _r + 1):
+        val_inner += numerical_integration_inner(n, k, _t, _m, _r)
+    val *= val_inner
+    return val
 
 def construct_N(m, theoretical=False):
     a = np.zeros([m + 1, m + 1])
