@@ -168,13 +168,13 @@ def numerical_integration(n, k, x_p, y_p, z_p):
     else:
         _r = y_p
         _m = x_p
-    _t = z_p / 2
+    _t = int(z_p / 2)
     val = double_factorial(z_p - 1)
     val *= multiply_add_2(n - k, _t - 1) / multiply_add_2(n - 1, _t + _r - 1)
     val *= multiply_add_2(k, _t + _m - 1) / multiply_add_2(n, 2 * _t + _m - 1)
     val_inner = 0
     for i in range(0, _r + 1):
-        val_inner += numerical_integration_inner(n, k, _t, _m, _r)
+        val_inner += numerical_integration_inner(n, k, _t, _m, _r, i)
     val *= val_inner
     return val
 

@@ -77,10 +77,14 @@ class TestEmpiricalNormalize(unittest.TestCase):
 
 class TestIntegrate(unittest.TestCase):
     def test_numerical_integrate(self):
-        optimization.n = 8
-        optimization.k = 4
-        # integral_value = m_not_small.integrate(3, 5, 7)
-        # self.assertAlmostEqual(integral_value, 1.0)
-
+        integral_value = m_not_small.numerical_integration(6, 3, 0, 0, 0)
+        self.assertAlmostEqual(integral_value, 1.0)
+        integral_value_2 = m_not_small.numerical_integration(6, 3, 0, 0, 2)
+        self.assertAlmostEqual(integral_value_2, 0.0375)
+        integral_value_3 = m_not_small.numerical_integration(6, 3, 1, 0, 2)
+        self.assertAlmostEqual(integral_value_3, 0.01875)
+        integral_value_4 = m_not_small.numerical_integration(6, 3, 1, 1, 2)
+        self.assertAlmostEqual(integral_value_4, 3/(160*7)*(2+15/12))
+   
 if __name__ == '__main__':
     unittest.main()
