@@ -134,7 +134,7 @@ def M2_term_inner(i, j, s):
         return 0
     coeff = factorial(i) / factorial(s)
     coeff *= factorial(j) / double_factorial(i - s)
-    coeff *= (1 - s) / double_factorial(j - s)
+    coeff *= (s - 1) / double_factorial(j - s)
     x_p = int((i - s) / 2)
     y_p = int((j - s) / 2)
     z_p = s + 1
