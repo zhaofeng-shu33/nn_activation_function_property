@@ -141,8 +141,8 @@ def M2_term(i, j, s):
     coeff = factorial(i) / factorial(s)
     coeff *= factorial(j) / double_factorial(i - s)
     coeff *= (1 - s) / double_factorial(j - s)
-    x_p = (i - s) / 2
-    y_p = (j - s) / 2
+    x_p = int((i - s) / 2)
+    y_p = int((j - s) / 2)
     z_p = s + 1
     coeff *= numerical_integration(optimization.n, optimization.k, x_p, y_p, z_p) 
     return coeff
