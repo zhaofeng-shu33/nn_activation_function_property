@@ -115,19 +115,19 @@ def compute_M_without_r(i, j):
         return 0
     else:
         result = -1 * M1_term(i, j)
-    result += get_M2(i, j)
+    result += M2_term(i, j)
     return result
 
-def get_M2(i, j):
+def M2_term(i, j):
     t = (i + j) / 2
     coeff = (optimization.n - 1) / optimization.n ** (t - 1)
     min_i_j = np.min([i, j])
     M2_acc = 0
     for s in range(0, min_i_j + 1):
-        M2_acc += M2_term(i, j, s)    
+        M2_acc += M2_term_inner(i, j, s)    
     return coeff * M2_acc
 
-def M2_term(i, j, s):
+def M2_term_inner(i, j, s):
     if (i + s) % 2 == 1:
         return 0
     elif s % 2 == 0:
