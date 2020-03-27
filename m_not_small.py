@@ -59,6 +59,9 @@ def double_factorial(n):
     return n * double_factorial(n - 2)
 
 def compute_N(i, j, new_api=True):
+    ''' new_api can simply the computation if (i+j)
+        is very large
+    '''
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)
@@ -94,19 +97,27 @@ def compute_M_without_r_theoretical(i, j):
     else:
         return (-1) * (i - 1) * (j - 1) * double_factorial(i + j - 3)
 
-def M1_term(i, j):
+def M1_term(i, j, new_api=False):
     t = int((i + j) / 2)
     log_result = 0
     n_minus_k = optimization.n - optimization.k
-    for s in range(0, t):
-        numerator = (2 * s + optimization.k) * abs(2 * s - 1)
-        denominator = (2 * s + optimization.n + 2) * optimization.n
-        log_result += np.log(numerator / denominator)
+    if 2 * t > n_minus_k + 2 and n_minus_k % 2 == 0 and new_api:
+        for r in range(0, int(n_minus_k / 2) + 1):
+            numerator = optimization.k + 2 * r
+            denominator = optimization.k + 2 * t + 2 * r
+            log_result += np.log(numerator / denominator)
+        for s in range(0, t):
+            log_result += np.log(abs(2 * s - 1) / optimization.n)
+    else:
+        for s in range(0, t):
+            numerator = (2 * s + optimization.k) * abs(2 * s - 1)
+            denominator = (2 * s + optimization.n + 2) * optimization.n
+            log_result += np.log(numerator / denominator)
     result = np.exp(log_result)
     result *= optimization.n * (i - 1) * (j - 1)
     return result
 
-def compute_M_without_r(i, j):
+def compute_M_without_r(i, j, new_api=False, ignore_M2=False):
     if (i + j) % 2 == 1:
         return 0
     if i + j == 0:
@@ -114,8 +125,9 @@ def compute_M_without_r(i, j):
     elif i == 1 or j == 1:
         return 0
     else:
-        result = -1 * M1_term(i, j)
-    result += M2_term(i, j)
+        result = -1 * M1_term(i, j, new_api=new_api)
+    if not ignore_M2:
+        result += M2_term(i, j)
     return result
 
 def M2_term(i, j):
