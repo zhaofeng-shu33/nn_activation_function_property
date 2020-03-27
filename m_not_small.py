@@ -94,44 +94,38 @@ def compute_M_without_r_theoretical(i, j):
     else:
         return (-1) * (i - 1) * (j - 1) * double_factorial(i + j - 3)
 
-def compute_M_without_r(i, j, new_api=False):
+def M1_term(i, j):
+    t = int((i + j) / 2)
+    log_result = 0
+    n_minus_k = optimization.n - optimization.k
+    for s in range(0, t):
+        numerator = (2 * s + optimization.k) * abs(2 * s - 1)
+        denominator = (2 * s + optimization.n + 2) * optimization.n
+        log_result += np.log(numerator / denominator)
+    result = np.exp(log_result)
+    result *= optimization.n * (i - 1) * (j - 1)
+    return result
+
+def compute_M_without_r(i, j):
     if (i + j) % 2 == 1:
         return 0
-    t = int((i + j) / 2)
-    if t == 0:
+    if i + j == 0:
         return optimization.n
     elif i == 1 or j == 1:
         return 0
     else:
-        log_result = 0
-        n_minus_k = optimization.n - optimization.k
-        if 2 * t > n_minus_k + 2 and n_minus_k % 2 == 0 and new_api:
-            for r in range(0, int(n_minus_k / 2) + 1):
-                numerator = optimization.k + 2 * r
-                denominator = optimization.k + 2 * t + 2 * r
-                log_result += np.log(numerator / denominator)
-            for s in range(0, t):
-                log_result += np.log(abs(2 * s - 1) / optimization.n)
-        else:
-            for s in range(0, t):
-                numerator = (2 * s + optimization.k) * abs(2 * s - 1)
-                denominator = (2 * s + optimization.n + 2) * optimization.n
-                log_result += np.log(numerator / denominator)
-        result = np.exp(log_result)
-        result *= optimization.n * (i - 1) * (j - 1)
-        if t >= 1:
-            result = - result
-    result += get_minus_M2(i, j)
+        result = -1 * M1_term(i, j)
+    result += get_M2(i, j)
     return result
 
-def get_minus_M2(i, j):
+def get_M2(i, j):
     t = (i + j) / 2
     coeff = (optimization.n - 1) / optimization.n ** (t - 1)
     min_i_j = np.min([i, j])
     M2_acc = 0
     for s in range(0, min_i_j + 1):
         M2_acc += M2_term(i, j, s)    
-    return -1 * coeff * M2_acc
+    return coeff * M2_acc
 
 def M2_term(i, j, s):
     if (i + s) % 2 == 1:
