@@ -196,7 +196,7 @@ def construct_N(m, theoretical=False):
                 a[i, j] = compute_N(i, j)
     return a
 
-def construct_M_without_r(m, theoretical=False):
+def construct_M_without_r(m, theoretical=False, ignore_M2=False):
     a = np.zeros([m + 1, m + 1])
     for i in range(m + 1):
         for j in range(m + 1):
@@ -205,12 +205,13 @@ def construct_M_without_r(m, theoretical=False):
             elif theoretical:
                 a[i, j] = compute_M_without_r_theoretical(i, j)
             else:
-                a[i, j] = compute_M_without_r(i, j)
+                a[i, j] = compute_M_without_r(i, j, ignore_M2=ignore_M2)
     return a
 
-def get_minimum(m, theoretical=False, filter_array=[], get_vector=False):
+def get_minimum(m, theoretical=False,
+        filter_array=[], get_vector=False, ignore_M2=False):
     N = construct_N(m, theoretical)
-    M = construct_M_without_r(m, theoretical)
+    M = construct_M_without_r(m, theoretical, ignore_M2=ignore_M2)
     if len(filter_array) > 0:
         M_f = M[:,filter_array][filter_array,:]
         N_f = N[:,filter_array][filter_array,:]
@@ -239,8 +240,13 @@ if __name__ == '__main__':
     parser.add_argument('--theoretical', default=False, type=bool,
         nargs='?', const=True)
     parser.add_argument('--filter', nargs='+', type=int, default=[])
+    parser.add_argument('--ignore_M2', default=False, type=bool,
+        nargs='?', const=True)
+    parser.add_argument('--get_vector', default=False, type=bool,
+        nargs='?', const=True)
     args = parser.parse_args()
     optimization.n = args.n
     optimization.k = args.k
-    print(get_minimum(args.m, args.theoretical, args.filter)) # -0.92
+    print(get_minimum(args.m, args.theoretical,
+        args.filter, args.get_vector, args.ignore_M2)) # -0.92
     
