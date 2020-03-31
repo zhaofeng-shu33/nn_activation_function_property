@@ -97,7 +97,7 @@ def compute_M_without_r_theoretical(i, j):
     else:
         return (-1) * (i - 1) * (j - 1) * double_factorial(i + j - 3)
 
-def M1_term(i, j, new_api=False):
+def M1_term(i, j, new_api=True):
     t = int((i + j) / 2)
     log_result = 0
     n_minus_k = optimization.n - optimization.k
@@ -117,7 +117,7 @@ def M1_term(i, j, new_api=False):
     result *= optimization.n * (i - 1) * (j - 1)
     return result
 
-def compute_M_without_r(i, j, new_api=False, ignore_M2=False):
+def compute_M_without_r(i, j, new_api=True, ignore_M2=False):
     if (i + j) % 2 == 1:
         return 0
     if i + j == 0:
