@@ -86,6 +86,8 @@ def plot_fixed_m(dic, save_fig=True, show=False):
             label='Theoretical', color='r', linestyle='dashed')
     if dic.get('Largest'):
         plt.scatter(x_axis, dic['Largest'], label='Largest', color='b')
+        ratio = [ dic['Largest'][i] / H[i] for i in range(len(H))]
+        plt.scatter(x_axis, ratio, color='b', label='ratio', marker='*')
         # least square fit for largest:
         x_axis_expand = np.vstack([x_axis, np.ones(len(x_axis))]).T
         slope, intercept = np.linalg.lstsq(x_axis_expand, dic['Largest'], rcond=None)[0]
