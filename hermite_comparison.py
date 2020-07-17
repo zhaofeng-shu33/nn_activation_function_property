@@ -77,6 +77,7 @@ def add_theoretical(dic):
 def plot_fixed_m(dic, save_fig=True, show=False):
     H = dic['Hermite']
     x_axis = np.array([i + 2 for i in range(len(H))])
+    plt.xticks(x_axis)
     plt.xlabel('degree of polynomials')
     plt.ylabel(r'$C[\xi]$').set_rotation(0)
     plt.scatter(x_axis, H, label='Hermite', color='r', marker='o')
