@@ -11,7 +11,7 @@ import argparse
 METHOD_NAME = ['False', 'tf.sigmoid', 'tf.tanh', 'tf.nn.relu', 'tf.nn.relu6', 'cubic', 'quadratic']
 TRAIN_TIMES = 100
 n = 3
-k = 2
+k = 1
 epsilon = 0.05
 
 def cubic(x):
@@ -21,12 +21,12 @@ def quadratic(x):
     return tf.add(x, tf.multiply(tf.constant(epsilon, dtype=tf.float64), tf.pow(x, tf.constant(2, dtype=tf.float64))))
 
 def build_model(x, y, activate=False):
-    w = tf.get_variable('w', [k,1], dtype=tf.float64, initializer=tf.zeros_initializer)    
+    w = tf.get_variable('w', [k, 1], dtype=tf.float64, initializer=tf.zeros_initializer)    
     unactivated_term = tf.matmul(x, w)
-    if(activate):
-        b = tf.get_variable('b', [1,1], dtype=tf.float64)
-        b_const = tf.constant(np.ones([n, 1]))  
-        unactivated_term = tf.add(unactivated_term, tf.multiply(b, b_const)) 
+    b = tf.get_variable('b', [1, 1], dtype=tf.float64, initializer=tf.zeros_initializer)
+    b_const = tf.constant(np.ones([n, 1]))  
+    unactivated_term = tf.add(unactivated_term, tf.multiply(b, b_const))
+    if activate:
         y_pred = activate(unactivated_term)
     else:
         y_pred = unactivated_term
@@ -75,6 +75,16 @@ def generate_uniform_sample():
     x = tf.constant(x_np_array)
     return (x, y)
 
+def artificial_dataset():
+    x = np.random.uniform(0, np.pi, 200)
+    y = np.exp(np.sin(x) + np.random.normal(size=200) / 2)
+    x = tf.constant(x, shape=(200, 1))
+    y = tf.constant(y, shape=(200, 1))
+    global n,k
+    n = 200
+    k = 1
+    return (x, y)
+
 def model_run(activate=False):
     tf.reset_default_graph()
     x_t, y_t = generate_uniform_sample()
@@ -87,7 +97,7 @@ def model_run(activate=False):
 
 def get_average(num_times, activate=False):
     total_value = 0
-    for i in range(num_times):
+    for _ in range(num_times):
         total_value += model_run(activate)
     return total_value / num_times
 
@@ -137,9 +147,8 @@ if __name__ == '__main__':
     parser.add_argument('--activate', default='False', choices=METHOD_NAME)
     parser.add_argument('--sample_times', type=int, default=100)
     parser.add_argument('--train_times', type=int, default=100)
-    parser.add_argument('--debug', default=False, type=bool, nargs='?', const=True, help='whether to debug') 
     parser.add_argument('--n', type=int, default=3)
-    parser.add_argument('--k', type=int, default=2)
+    parser.add_argument('--k', type=int, default=1)
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--collect', default=False, type=bool, nargs='?', const=True)
     parser.add_argument('--table', default=False, type=bool, nargs='?', const=True)
@@ -149,13 +158,8 @@ if __name__ == '__main__':
     k = args.k
     activate = False
     exec('activate = ' + args.activate)
-    if activate:
-        k = k -1
     if args.seed != 0:
         np.random.seed(args.seed)
-    if args.debug:
-        import pdb
-        pdb.set_trace()
     if(args.collect):
         collect_results(args.sample_times)
     elif(args.table):
