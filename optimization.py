@@ -74,17 +74,17 @@ def artificial_dataset():
     k = 1
     return (x, y)
 
-def model_run(activate=False):
+def model_run(activate=False, sample_generation=generate_uniform_sample):
     tf.reset_default_graph()
-    x_t, y_t = generate_uniform_sample()
+    x_t, y_t = sample_generation()
     loss = build_model(x_t, y_t, activate)
     loss_value = train_model(loss)
     return loss_value
 
-def get_average(num_times, activate=False):
+def get_average(num_times, activate=False, sample_generation=generate_uniform_sample):
     total_value = 0
     for _ in range(num_times):
-        total_value += model_run(activate)
+        total_value += model_run(activate, sample_generation)
     return total_value / num_times
 
 
@@ -138,6 +138,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--collect', default=False, type=bool, nargs='?', const=True)
     parser.add_argument('--table', default=False, type=bool, nargs='?', const=True)
+    parser.add_argument('--artificial', default=False, type=bool, nargs='?', const=True)
     args = parser.parse_args()
     TRAIN_TIMES = args.train_times
     n = args.n
@@ -151,5 +152,11 @@ if __name__ == '__main__':
     elif(args.table):
         generate_report_table()
     else:
-        average_value = get_average(args.sample_times, activate)
+        if args.artificial:
+            sample_generation_function = artificial_dataset
+        else:
+            sample_generation_function = generate_uniform_sample
+        average_value = get_average(args.sample_times,
+                                    activate,
+                                    sample_generation=sample_generation_function)
         print(args.activate, average_value)
