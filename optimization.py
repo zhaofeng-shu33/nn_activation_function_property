@@ -22,10 +22,10 @@ def quadratic(x):
 
 def build_model(x, y, activate=False):
     w = tf.get_variable('w', [k, 1], dtype=tf.float64, initializer=tf.zeros_initializer)    
-    unactivated_term = tf.matmul(x, w)
+    unactivated_term_1 = tf.matmul(x, w)
     b = tf.get_variable('b', [1, 1], dtype=tf.float64, initializer=tf.zeros_initializer)
     b_const = tf.constant(np.ones([n, 1]))  
-    unactivated_term = tf.add(unactivated_term, tf.multiply(b, b_const))
+    unactivated_term = tf.add(unactivated_term_1, tf.multiply(b, b_const))
     if activate:
         y_pred = activate(unactivated_term)
     else:
@@ -41,18 +41,7 @@ def train_model(loss):
     sess.run(init)    
     for i in range(TRAIN_TIMES):
         _, loss_value = sess.run((train, loss))
-    return loss_value  
-
-def assign_linear_weight(x_t, y_t, model):
-    sess = tf.Session()
-    with sess.as_default():
-        x = x_t.eval()
-        y = y_t.eval()
-        w = x.T @ y
-        w_t = tf.global_variables()[0]
-        w_t.assign(w).eval()
-        model_value = model.eval()
-    return model_value
+    return loss_value
 
 def get_spherical_coordinate():
     '''actually get normal distribution with sigma^2 = 1/n
@@ -85,20 +74,17 @@ def artificial_dataset():
     k = 1
     return (x, y)
 
-def model_run(activate=False):
+def model_run(activate=False, sample_generation=generate_uniform_sample):
     tf.reset_default_graph()
-    x_t, y_t = generate_uniform_sample()
+    x_t, y_t = sample_generation()
     loss = build_model(x_t, y_t, activate)
-    if activate == False:
-        loss_value = assign_linear_weight(x_t, y_t, loss)
-    else:
-        loss_value = train_model(loss)
+    loss_value = train_model(loss)
     return loss_value
 
-def get_average(num_times, activate=False):
+def get_average(num_times, activate=False, sample_generation=generate_uniform_sample):
     total_value = 0
     for _ in range(num_times):
-        total_value += model_run(activate)
+        total_value += model_run(activate, sample_generation)
     return total_value / num_times
 
 
@@ -152,6 +138,7 @@ if __name__ == '__main__':
     parser.add_argument('--seed', type=int, default=0)
     parser.add_argument('--collect', default=False, type=bool, nargs='?', const=True)
     parser.add_argument('--table', default=False, type=bool, nargs='?', const=True)
+    parser.add_argument('--artificial', default=False, type=bool, nargs='?', const=True)
     args = parser.parse_args()
     TRAIN_TIMES = args.train_times
     n = args.n
@@ -165,5 +152,11 @@ if __name__ == '__main__':
     elif(args.table):
         generate_report_table()
     else:
-        average_value = get_average(args.sample_times, activate)
+        if args.artificial:
+            sample_generation_function = artificial_dataset
+        else:
+            sample_generation_function = generate_uniform_sample
+        average_value = get_average(args.sample_times,
+                                    activate,
+                                    sample_generation=sample_generation_function)
         print(args.activate, average_value)
