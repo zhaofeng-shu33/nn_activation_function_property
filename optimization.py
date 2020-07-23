@@ -23,7 +23,7 @@ def quadratic(x):
 def build_model(x, y, activate=False):
     w = tf.get_variable('w', [k, 1], dtype=tf.float64, initializer=tf.zeros_initializer)    
     unactivated_term = tf.matmul(x, w)
-    b = tf.get_variable('b', [1,1], dtype=tf.float64)
+    b = tf.get_variable('b', [1, 1], dtype=tf.float64, initializer=tf.zeros_initializer)
     b_const = tf.constant(np.ones([n, 1]))  
     unactivated_term = tf.add(unactivated_term, tf.multiply(b, b_const))
     if activate:
@@ -160,9 +160,6 @@ if __name__ == '__main__':
     exec('activate = ' + args.activate)
     if args.seed != 0:
         np.random.seed(args.seed)
-    if args.debug:
-        import pdb
-        pdb.set_trace()
     if(args.collect):
         collect_results(args.sample_times)
     elif(args.table):
