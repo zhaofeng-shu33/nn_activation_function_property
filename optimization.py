@@ -22,10 +22,10 @@ def quadratic(x):
 
 def build_model(x, y, activate=False):
     w = tf.get_variable('w', [k, 1], dtype=tf.float64, initializer=tf.zeros_initializer)    
-    unactivated_term = tf.matmul(x, w)
+    unactivated_term_1 = tf.matmul(x, w)
     b = tf.get_variable('b', [1, 1], dtype=tf.float64, initializer=tf.zeros_initializer)
     b_const = tf.constant(np.ones([n, 1]))  
-    unactivated_term = tf.add(unactivated_term, tf.multiply(b, b_const))
+    unactivated_term = tf.add(unactivated_term_1, tf.multiply(b, b_const))
     if activate:
         y_pred = activate(unactivated_term)
     else:
@@ -41,18 +41,7 @@ def train_model(loss):
     sess.run(init)    
     for i in range(TRAIN_TIMES):
         _, loss_value = sess.run((train, loss))
-    return loss_value  
-
-def assign_linear_weight(x_t, y_t, model):
-    sess = tf.Session()
-    with sess.as_default():
-        x = x_t.eval()
-        y = y_t.eval()
-        w = x.T @ y
-        w_t = tf.global_variables()[0]
-        w_t.assign(w).eval()
-        model_value = model.eval()
-    return model_value
+    return loss_value
 
 def get_spherical_coordinate():
     '''actually get normal distribution with sigma^2 = 1/n
@@ -89,10 +78,7 @@ def model_run(activate=False):
     tf.reset_default_graph()
     x_t, y_t = generate_uniform_sample()
     loss = build_model(x_t, y_t, activate)
-    if activate == False:
-        loss_value = assign_linear_weight(x_t, y_t, loss)
-    else:
-        loss_value = train_model(loss)
+    loss_value = train_model(loss)
     return loss_value
 
 def get_average(num_times, activate=False):
