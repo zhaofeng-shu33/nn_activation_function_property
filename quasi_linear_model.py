@@ -10,8 +10,8 @@ from sklearn.base import BaseEstimator
 # logging.getLogger('tensorflow').disabled = True
 
 class QuasiLinearRegression(BaseEstimator):
-    def __init__(self):
-        self.epsilon = 0.05
+    def __init__(self, epsilon=0.05):
+        self.epsilon = epsilon
         self.train_time = 1000
         self.order = 3
         self.batch_size = 50
@@ -30,14 +30,15 @@ class QuasiLinearRegression(BaseEstimator):
         inv_R = inv(R)
         w_0 = inv_R @ w_0
         w_hat = inv_R @ w_hat
-        w_hat /= np.linalg.norm(w_hat)
-        self.w = w_0 + self.epsilon  * w_hat
+        self.epsilon_penalty = np.linalg.norm(w_hat)
+        self.w = w_0 + self.epsilon  * w_hat / self.epsilon_penalty
 
     def _quasi_predict(self, X):
         n = X.shape[0]
         X_e = np.hstack((X,np.ones((n, 1))))        
         Z = X_e @ self.w
-        return Z + self.epsilon * np.power(Z, self.order)
+        non_linear_term = np.power(Z, self.order)
+        return Z + self.epsilon * non_linear_term / self.epsilon_penalty
 
     def fit(self, X, Y):
         X, Y = self._validate_data(X, Y)
