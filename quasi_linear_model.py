@@ -1,13 +1,20 @@
 # we use SGD to minimize the object function
-import tensorflow as tf
 import numpy as np
+import logging
 
-class QuasiLinearRegression:
+from sklearn.base import BaseEstimator
+import tensorflow as tf
+
+logging.getLogger('tensorflow').disabled = True
+
+class QuasiLinearRegression(BaseEstimator):
     def __init__(self):
         self.epsilon = 0.05
-        self.train_time = 10
+        self.train_time = 1000
         self.order = 3
+        self.batch_size = 50
     def fit(self, X, Y):
+        X, Y = self._validate_data(X, Y)
         k = X.shape[1]
         self._build_model(k)
         self._train_model(X, Y)
@@ -33,13 +40,14 @@ class QuasiLinearRegression:
         self.sess.run(init)
         n = X.shape[0]
         for _ in range(self.train_time): # epochs
-            for i in range(n): # batch size = 1
-                x = X[i, :].reshape((1, 2))
-                y = Y[i].reshape((1, 1))
+            for i in range(0, n, self.batch_size): # batch size = 1
+                i_end = np.min([n, i + self.batch_size])
+                x = X[i:i_end, :].reshape((-1, X.shape[1]))
+                y = Y[i:i_end].reshape((-1, 1))
                 feed_dict = {self.x: x, self.y: y}
                 _, loss_value = self.sess.run((train, self.model), feed_dict)
         return loss_value
     def predict(self, X):
         feed_dict = {self.x: X}
-        _, y_pred_value = self.sess.run(self.y_pred, feed_dict)
-        return y_pred_value
+        y_pred_value = self.sess.run(self.y_pred, feed_dict)
+        return y_pred_value.reshape((y_pred_value.shape[0]))
