@@ -5,9 +5,9 @@ import logging
 from scipy.linalg import qr, inv
 
 from sklearn.base import BaseEstimator
-import tensorflow as tf
+# import tensorflow as tf
 
-logging.getLogger('tensorflow').disabled = True
+# logging.getLogger('tensorflow').disabled = True
 
 class QuasiLinearRegression(BaseEstimator):
     def __init__(self):
@@ -30,6 +30,7 @@ class QuasiLinearRegression(BaseEstimator):
         inv_R = inv(R)
         w_0 = inv_R @ w_0
         w_hat = inv_R @ w_hat
+        w_hat /= np.linalg.norm(w_hat)
         self.w = w_0 + self.epsilon  * w_hat
 
     def _quasi_predict(self, X):
