@@ -9,6 +9,9 @@ class TestQuasiLinearModel(unittest.TestCase):
         y = np.array([3, 6, 8], dtype=np.float)
         model = QuasiLinearRegression()
         model.fit(x, y)
+        x_test = np.array([[7, 8], [9, 10]], dtype=np.float)
+        y_predict = model.predict(x_test)
+        print(y_predict)
 
 if __name__ == '__main__':
     unittest.main()
