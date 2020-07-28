@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage{amsmath}
 \title{Quasi Linear model}
 \author{zhaofeng-shu33}
 \begin{document}
@@ -33,4 +34,35 @@ for the input vector $x$ with $k$ features(dimensions).
 The non-linearity comes from the general non-linear function $\xi$, which we require to be smooth enough.
 The quasi concept comes from that we choose $\epsilon$ to be very small.
 
+Since $\epsilon$ is small, we can assume the optimal weight $w$ has a small perturbation around
+\begin{equation}\label{eq:W_0}
+w_0 = X^T Y
+\end{equation}
+
+
+And we let $w=w_0 + \epsilon \hat{w} + o(\epsilon)$ Our goal is to compute the optimal direction $\hat{w}$ which makes
+$||Y-\sigma(Xw)||^2$ as small as possible.
+The solution of $\hat{w}$ is:
+\begin{equation}\label{eq:W_hat}
+\hat{w} = X^T\left(\nabla \xi(XX^TY)(Y-XX^TY) - \xi(XX^TY)
+\right)
+\end{equation}
+In practice, when $||\hat{w}||$ is very large, we need to take smaller $\epsilon$ to make our method work. We use 
+$\frac{\epsilon}{||\hat{w}||} $ to replace $\epsilon$ to overcome this problem.
+
+Therefore, given the data, we propose a quasi-linear model for supervised learning problem:
+
+The prediction value $\hat{Y} = z + \frac{\epsilon}{||\hat{w}||} \xi(z) $ where $z = (w_0 + \frac{\epsilon}{||\hat{w}||} \hat{w})^T X$ and $w_0, \hat{w}$ is given by
+Equation \eqref{eq:W_0}, \eqref{eq:W_hat} respectively.
+
+The hyper-parameters for our model are $\xi, \epsilon$. For example, we can take $\epsilon = 0.05, \xi(z) = z^3$ which empirically performs well.
+
+There is no theoretical guarantee that our quasi-linear model is better than linear model for any problems. For example, if the data $(X,Y)$ have exactly
+linear relationship, then quasi-linear model is inferior to linear model unless $\epsilon = 0$. However, we have shown that averaged over many different "Problems",
+the MSE of quasi-linear model is strictly smaller than linear model, thus proving some theoretical explanation for our approach.
+
+Another observation is that for a general non-linear function $\sigma$, it is not possible to solve $\omega$ exactly but we can use SGD method
+to approximately get a local (or even global) optimal value for $\omega$. This is what Neural Network with non-trivial activation function is doing.
+Generally speaking, if training time is enough, this simple neural network model performs better than our quasi-linear model since it solves $\omega$ more precisely.
+However, our advantages are that we do not need time-confusing training to get the weight $\omega$, we can get it directly from Equation \eqref{eq:W_0}, \eqref{eq:W_hat}, using some forward matrix computation.
 \end{document}
