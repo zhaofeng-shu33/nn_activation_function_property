@@ -1,0 +1,36 @@
+\documentclass{article}
+\title{Quasi Linear model}
+\author{zhaofeng-shu33}
+\begin{document}
+	\maketitle
+Linear Square solution is optimal for the cost function $||Y-Xw||^2$ where $Y$ is $n\times 1$ vector,
+$X$ is $n\times k$ matrix and $w$ is $k\times 1$ vector. $X,Y$ are given and we want to optimize $w$.
+Notice that we omit the constant bias $b$ here, since it can be integrated with the last column of matrix $X$ with element 1.
+
+We consider the case $n > k$ and $\textrm{rank}(X) = k$. In this case, using standard derivative method we can get
+the optimal solution is
+$$
+w = (X^TX)^{-1} X^T Y
+$$
+
+Further, we can assume $X^TX=I_k$, which is equivalent to say each column of $X$ is orthogonal to each other and with $L_2-$norm 1.
+This can be achieved by QR decomposition of the matrix $X=QR$ where $Q$ is with the same dimension of $X$ and $R$ is an upper triangular 
+$k\times k$ matrix. Therefore, without loss of generality we assume $X^TX=I_k$ in the following discussion.
+
+Then $w=X^T Y$, this is what Least Square method told me. The above discussion is doing one thing, choose a linear function $\sum_{i=1}^k w_i x_i$
+to approximate a target function $y$ based on finite observations of $(x^{(i)}_1,\dots, x^{(i)}_k, y_i)$ for $i=1,\dots, n$.
+
+Now our goal is choose a non-linear function $\sigma$ which can better approximate the target function in the sense of mean square error.
+It is hard to choose from a general space, we restrict to quasi-linear function. That is, functions which are \textbf{near} to 
+linear ones.
+
+We assume our ideal function has the following form:
+
+$$
+\sigma(z) = z + \epsilon \xi(z) \textrm{ where } z = \sum_{i=1}^k w_i x_i
+$$
+for the input vector $x$ with $k$ features(dimensions).
+The non-linearity comes from the general non-linear function $\xi$, which we require to be smooth enough.
+The quasi concept comes from that we choose $\epsilon$ to be very small.
+
+\end{document}

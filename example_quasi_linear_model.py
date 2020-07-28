@@ -20,6 +20,12 @@ def get_quasi_linear_prediction_error(X, Y):
     Y_pred_quasilinear = reg.predict(X)
     return mean_squared_error(Y, Y_pred_quasilinear)
 
+def get_quasi_approximation_linear_prediction_error(X, Y):
+    reg = QuasiLinearRegression()
+    reg._quasi_fit(X, Y)
+    Y_pred_quasilinear = reg._quasi_predict(X)
+    return mean_squared_error(Y, Y_pred_quasilinear)
+
 def artificial_dataset(sample_size=10):
     # generate data by formula y = z + 0.05 * z^3
     # z = 3 * x_1 + 4 * x_2 - 2
@@ -31,15 +37,16 @@ def artificial_dataset(sample_size=10):
     return (X, Y)
 
 def toy_dataset():
-    X = [[1, 2], [3, 4], [5, 6], [7, 8]]
-    Y = [3, 6, 8, 12]
+    X = [[1, 2], [3, 4.1], [5, 6], [6.9, 8.1]]
+    Y = [3, 6, 8, 11.8]
     return (X, Y)
 
 def compare_two_method(X, Y):
     error_linear = get_linear_prediction_error(X, Y)
     error_quasi_linear = get_quasi_linear_prediction_error(X, Y)
-    print(error_linear, error_quasi_linear)
-    
+    error_quasi_approximation_linear = get_quasi_approximation_linear_prediction_error(X, Y)
+    print(error_linear, error_quasi_linear, error_quasi_approximation_linear)
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--dataset', choices=['toy', 'artificial'], default='toy')

@@ -5,9 +5,10 @@ import logging
 from scipy.linalg import qr, inv
 
 from sklearn.base import BaseEstimator
-# import tensorflow as tf
+from sklearn.utils import check_array
+import tensorflow as tf
 
-# logging.getLogger('tensorflow').disabled = True
+logging.getLogger('tensorflow').disabled = True
 
 class QuasiLinearRegression(BaseEstimator):
     def __init__(self, epsilon=0.05):
@@ -34,6 +35,7 @@ class QuasiLinearRegression(BaseEstimator):
         self.w = w_0 + self.epsilon  * w_hat / self.epsilon_penalty
 
     def _quasi_predict(self, X):
+        X = check_array(X)
         n = X.shape[0]
         X_e = np.hstack((X,np.ones((n, 1))))        
         Z = X_e @ self.w
