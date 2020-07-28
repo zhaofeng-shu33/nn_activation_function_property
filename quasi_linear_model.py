@@ -2,6 +2,8 @@
 import numpy as np
 import logging
 
+from scipy.linalg import qr, inv
+
 from sklearn.base import BaseEstimator
 import tensorflow as tf
 
@@ -13,6 +15,29 @@ class QuasiLinearRegression(BaseEstimator):
         self.train_time = 1000
         self.order = 3
         self.batch_size = 50
+
+    def _quasi_fit(self, X, Y):
+        X, Y = self._validate_data(X, Y)
+        n = X.shape[0]
+        assert(n > X.shape[1] + 1)
+        X_e = np.hstack((X,np.ones((n, 1))))
+        Q,R=qr(X_e, mode='economic')
+        w_0 = Q.T @ Y
+        point = Q @ w_0
+        tmp_value = np.diag(self.order * np.power(point, self.order - 1)) @ (Y - point)
+        tmp_value -= np.power(point, self.order)
+        w_hat = Q.T @ tmp_value
+        inv_R = inv(R)
+        w_0 = inv_R @ w_0
+        w_hat = inv_R @ w_hat
+        self.w = w_0 + self.epsilon  * w_hat
+
+    def _quasi_predict(self, X):
+        n = X.shape[0]
+        X_e = np.hstack((X,np.ones((n, 1))))        
+        Z = X_e @ self.w
+        return Z + self.epsilon * np.power(Z, self.order)
+
     def fit(self, X, Y):
         X, Y = self._validate_data(X, Y)
         k = X.shape[1]

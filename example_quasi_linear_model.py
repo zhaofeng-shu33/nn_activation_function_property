@@ -24,6 +24,7 @@ def artificial_dataset(sample_size=10):
     # generate data by formula y = z + 0.05 * z^3
     # z = 3 * x_1 + 4 * x_2 - 2
     # where (x_1, x_2) is generated from uniform random number
+    np.random.seed(12)
     X = np.random.random([sample_size, 2])
     Z = X @ np.array([3, 4]) - 2
     Y = Z + 0.05 * np.power(Z, 3.0)
