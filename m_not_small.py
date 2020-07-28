@@ -59,6 +59,9 @@ def double_factorial(n):
     return n * double_factorial(n - 2)
 
 def compute_N(i, j, new_api=True):
+    ''' new_api can simply the computation if (i+j)
+        is very large
+    '''
     if (i + j) % 2 == 1:
         return 0
     t = int((i + j) / 2)
@@ -94,53 +97,56 @@ def compute_M_without_r_theoretical(i, j):
     else:
         return (-1) * (i - 1) * (j - 1) * double_factorial(i + j - 3)
 
-def compute_M_without_r(i, j, new_api=False):
+def M1_term(i, j, new_api=True):
+    t = int((i + j) / 2)
+    log_result = 0
+    n_minus_k = optimization.n - optimization.k
+    if 2 * t > n_minus_k + 2 and n_minus_k % 2 == 0 and new_api:
+        for r in range(0, int(n_minus_k / 2) + 1):
+            numerator = optimization.k + 2 * r
+            denominator = optimization.k + 2 * t + 2 * r
+            log_result += np.log(numerator / denominator)
+        for s in range(0, t):
+            log_result += np.log(abs(2 * s - 1) / optimization.n)
+    else:
+        for s in range(0, t):
+            numerator = (2 * s + optimization.k) * abs(2 * s - 1)
+            denominator = (2 * s + optimization.n + 2) * optimization.n
+            log_result += np.log(numerator / denominator)
+    result = np.exp(log_result)
+    result *= optimization.n * (i - 1) * (j - 1)
+    return result
+
+def compute_M_without_r(i, j, new_api=True, ignore_M2=False):
     if (i + j) % 2 == 1:
         return 0
-    t = int((i + j) / 2)
-    if t == 0:
+    if i + j == 0:
         return optimization.n
     elif i == 1 or j == 1:
         return 0
     else:
-        log_result = 0
-        n_minus_k = optimization.n - optimization.k
-        if 2 * t > n_minus_k + 2 and n_minus_k % 2 == 0 and new_api:
-            for r in range(0, int(n_minus_k / 2) + 1):
-                numerator = optimization.k + 2 * r
-                denominator = optimization.k + 2 * t + 2 * r
-                log_result += np.log(numerator / denominator)
-            for s in range(0, t):
-                log_result += np.log(abs(2 * s - 1) / optimization.n)
-        else:
-            for s in range(0, t):
-                numerator = (2 * s + optimization.k) * abs(2 * s - 1)
-                denominator = (2 * s + optimization.n + 2) * optimization.n
-                log_result += np.log(numerator / denominator)
-        result = np.exp(log_result)
-        result *= optimization.n * (i - 1) * (j - 1)
-        if t >= 1:
-            result = - result
-    result += get_minus_M2(i, j)
+        result = -1 * M1_term(i, j, new_api=new_api)
+    if not ignore_M2:
+        result += M2_term(i, j)
     return result
 
-def get_minus_M2(i, j):
+def M2_term(i, j):
     t = (i + j) / 2
     coeff = (optimization.n - 1) / optimization.n ** (t - 1)
     min_i_j = np.min([i, j])
     M2_acc = 0
     for s in range(0, min_i_j + 1):
-        M2_acc += M2_term(i, j, s)    
-    return -1 * coeff * M2_acc
+        M2_acc += M2_term_inner(i, j, s)    
+    return coeff * M2_acc
 
-def M2_term(i, j, s):
+def M2_term_inner(i, j, s):
     if (i + s) % 2 == 1:
         return 0
     elif s % 2 == 0:
         return 0
     coeff = factorial(i) / factorial(s)
     coeff *= factorial(j) / double_factorial(i - s)
-    coeff *= (1 - s) / double_factorial(j - s)
+    coeff *= (s - 1) / double_factorial(j - s)
     x_p = int((i - s) / 2)
     y_p = int((j - s) / 2)
     z_p = s + 1
@@ -190,7 +196,7 @@ def construct_N(m, theoretical=False):
                 a[i, j] = compute_N(i, j)
     return a
 
-def construct_M_without_r(m, theoretical=False):
+def construct_M_without_r(m, theoretical=False, ignore_M2=False):
     a = np.zeros([m + 1, m + 1])
     for i in range(m + 1):
         for j in range(m + 1):
@@ -199,12 +205,13 @@ def construct_M_without_r(m, theoretical=False):
             elif theoretical:
                 a[i, j] = compute_M_without_r_theoretical(i, j)
             else:
-                a[i, j] = compute_M_without_r(i, j)
+                a[i, j] = compute_M_without_r(i, j, ignore_M2=ignore_M2)
     return a
 
-def get_minimum(m, theoretical=False, filter_array=[], get_vector=False):
+def get_minimum(m, theoretical=False,
+        filter_array=[], get_vector=False, ignore_M2=False):
     N = construct_N(m, theoretical)
-    M = construct_M_without_r(m, theoretical)
+    M = construct_M_without_r(m, theoretical, ignore_M2=ignore_M2)
     if len(filter_array) > 0:
         M_f = M[:,filter_array][filter_array,:]
         N_f = N[:,filter_array][filter_array,:]
@@ -233,8 +240,13 @@ if __name__ == '__main__':
     parser.add_argument('--theoretical', default=False, type=bool,
         nargs='?', const=True)
     parser.add_argument('--filter', nargs='+', type=int, default=[])
+    parser.add_argument('--ignore_M2', default=False, type=bool,
+        nargs='?', const=True)
+    parser.add_argument('--get_vector', default=False, type=bool,
+        nargs='?', const=True)
     args = parser.parse_args()
     optimization.n = args.n
     optimization.k = args.k
-    print(get_minimum(args.m, args.theoretical, args.filter)) # -0.92
+    print(get_minimum(args.m, args.theoretical,
+        args.filter, args.get_vector, args.ignore_M2)) # -0.92
     
