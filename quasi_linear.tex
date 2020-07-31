@@ -4,7 +4,12 @@
 \author{zhaofeng-shu33}
 \begin{document}
 	\maketitle
-Least Square solution is optimal for the cost function $||Y-Xw||^2$ where $Y$ is $n\times 1$ vector,
+\section{Introduction}
+	Intuitively, quasi-linear functions are functions which are "near" linear.
+	There are many different ways to define the concept of quasi-linear function. For example, we can use piecewise-linear function to do regression \cite{qLR}.
+	
+\section{Model}
+Linear Square solution is optimal for the cost function $||Y-Xw||^2$ where $Y$ is $n\times 1$ vector,
 $X$ is $n\times k$ matrix and $w$ is $k\times 1$ vector. $X,Y$ are given and we want to optimize $w$.
 Notice that we omit the constant bias $b$ here, since it can be integrated with the last column of matrix $X$ with element 1.
 
@@ -65,4 +70,8 @@ Another observation is that for a general non-linear function $\sigma$, it is no
 to approximately get a local (or even global) optimal value for $\omega$. This is what Neural Network with non-trivial activation function is doing.
 Generally speaking, if training time is enough, this simple neural network model performs better than our quasi-linear model since it solves $\omega$ more precisely.
 However, our advantages are that we do not need time-confusing training to get the weight $\omega$, we can get it directly from Equation \eqref{eq:W_0}, \eqref{eq:W_hat}, using some forward matrix computation.
+
+\bibliographystyle{plain}
+\bibliography{exportlist}
+
 \end{document}
