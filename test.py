@@ -11,6 +11,8 @@ class TestFunc(unittest.TestCase):
     def test_get_spherical_coordinate(self):
         arr = get_spherical_coordinate()
     def test_generate_uniform_sample(self):
+        optimization.n = 3
+        optimization.k = 2
         x_t, y_t = generate_uniform_sample()
         self.assertEqual(x_t.shape.as_list(), [3, 2])
         self.assertEqual(y_t.shape.as_list(), [3, 1])
