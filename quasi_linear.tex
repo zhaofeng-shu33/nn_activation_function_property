@@ -71,7 +71,25 @@ to approximately get a local (or even global) optimal value for $\omega$. This i
 Generally speaking, if training time is enough, this simple neural network model performs better than our quasi-linear model since it solves $\omega$ more precisely.
 However, our advantages are that we do not need time-confusing training to get the weight $\omega$, we can get it directly from Equation \eqref{eq:W_0}, \eqref{eq:W_hat}, using some forward matrix computation.
 \section{Example}
-
+We generate 10 samples $X$ uniformly in 2d and transform them to $Y$ by $Y=Z + 0.005 Z^3, Z = 3X_1 + 4X_2 -2$.
+If we can choose properly the parameter $\epsilon = 0.005$ and the non-linear function $z^3$, then we can solve the problem numerically by
+training a simple neural network. However, if $\epsilon$ and $\xi$ are unknown, then we could not guarantee that the solution of SGD is better.
+The experiment investigates this by choosing different $\epsilon$ and $\xi$ for the network:
+\begin{table}[!ht]
+	\centering
+	\begin{tabular}{cccc}
+	 \hline
+	 Method & $\epsilon$ & $\xi$ & Train Error \\
+	 \hline
+	 LS & NaN & NaN & 0.0018 \\
+	 QLM & 0.05 & $z^3$ & 0.0015 \\
+	 NN & 0.005 & $z^3$ & 5.8e-5\\
+	 NN & 0.05 & $z^3$ & 0.013 \\
+	 QLM & 0.05 & $z^5$ & 0.0014 \\
+	 NN & 0.005 & $z^5$ & 0.023 \\
+	 \hline
+	\end{tabular}
+\end{table}
 \bibliographystyle{plain}
 \bibliography{exportlist}
 

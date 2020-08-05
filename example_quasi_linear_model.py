@@ -10,6 +10,7 @@ from quasi_linear_model import QuasiLinearRegression
 
 TRAIN_TIME = 1000
 EPS = 0.05
+ORDER = 3
 def get_linear_prediction_error(X, Y):
     reg = linear_model.LinearRegression()
     reg.fit(X, Y)
@@ -17,13 +18,13 @@ def get_linear_prediction_error(X, Y):
     return mean_squared_error(Y, Y_pred_linear)
 
 def get_quasi_linear_prediction_error(X, Y):
-    reg = QuasiLinearRegression(train_time=TRAIN_TIME, epsilon=EPS)
+    reg = QuasiLinearRegression(train_time=TRAIN_TIME, epsilon=EPS, order=ORDER)
     reg.fit(X, Y)
     Y_pred_quasilinear = reg.predict(X)
     return mean_squared_error(Y, Y_pred_quasilinear)
 
 def get_quasi_approximation_linear_prediction_error(X, Y):
-    reg = QuasiLinearRegression()
+    reg = QuasiLinearRegression(epsilon=EPS, order=ORDER)
     reg._quasi_fit(X, Y)
     Y_pred_quasilinear = reg._quasi_predict(X)
     return mean_squared_error(Y, Y_pred_quasilinear)
@@ -54,9 +55,11 @@ if __name__ == "__main__":
     parser.add_argument('--dataset', choices=['toy', 'artificial'], default='toy')
     parser.add_argument('--train_time', type=int, default=100)
     parser.add_argument('--epsilon', type=float, default=0.05)
+    parser.add_argument('--order', type=float, default=3.0)
     args = parser.parse_args()
     TRAIN_TIME = args.train_time
     EPS = args.epsilon
+    ORDER = args.order
     if args.dataset == 'toy':
         X, Y = toy_dataset()
     else:
