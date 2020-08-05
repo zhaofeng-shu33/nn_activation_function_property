@@ -11,9 +11,9 @@ import tensorflow as tf
 logging.getLogger('tensorflow').disabled = True
 
 class QuasiLinearRegression(BaseEstimator):
-    def __init__(self, epsilon=0.05):
+    def __init__(self, epsilon=0.05, train_time=1000):
         self.epsilon = epsilon
-        self.train_time = 1000
+        self.train_time = train_time
         self.order = 3
         self.batch_size = 50
 
