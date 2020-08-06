@@ -55,8 +55,8 @@ class QuasiLinearRegression(BaseEstimator):
     def _build_model(self, k):
         self.x = tf.placeholder(tf.float64, shape=(None, k))
         self.y = tf.placeholder(tf.float64, shape=(None, 1))
-        w = tf.get_variable('w', [k, 1], dtype=tf.float64, initializer=tf.zeros_initializer)    
-        b = tf.get_variable('b', [1], dtype=tf.float64, initializer=tf.zeros_initializer)
+        w = tf.get_variable('w', [k, 1], dtype=tf.float64, initializer=tf.random_normal_initializer)
+        b = tf.get_variable('b', [1], dtype=tf.float64, initializer=tf.random_normal_initializer)
         unactivated_term = tf.matmul(self.x, w) + b
         self.y_pred = self._activate_function(unactivated_term)
         self.model = tf.reduce_sum(tf.square(tf.subtract(self.y_pred, self.y)))
