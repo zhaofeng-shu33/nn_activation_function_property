@@ -5,6 +5,7 @@ import logging
 from scipy.linalg import qr, inv
 
 from sklearn.base import BaseEstimator
+from sklearn.linear_model import LinearRegression
 from sklearn.utils import check_array
 import tensorflow as tf
 
@@ -18,7 +19,6 @@ class QuasiLinearRegression(BaseEstimator):
         self.batch_size = 50
 
     def _quasi_fit(self, X, Y):
-        X, Y = self._validate_data(X, Y)
         n = X.shape[0]
         assert(n > X.shape[1] + 1)
         X_e = np.hstack((X,np.ones((n, 1))))
@@ -43,7 +43,6 @@ class QuasiLinearRegression(BaseEstimator):
         return Z + self.epsilon * non_linear_term / self.epsilon_penalty
 
     def fit(self, X, Y):
-        X, Y = self._validate_data(X, Y)
         k = X.shape[1]
         self._build_model(k)
         self._train_model(X, Y)

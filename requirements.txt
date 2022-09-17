@@ -2,3 +2,5 @@ scipy
 numpy
 matplotlib
 tensorflow==1.15.2
+python=3.6
+scikit-learn==0.22
