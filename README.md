@@ -20,7 +20,7 @@ python optimization.py --activate tf.sigmoid
 
 We found:
 1. If the activation function is non-negative, the result is worst even with a constant bias.
-1. `tf.tanh` is a little bit better than the case with no activation function.
+2. `tf.tanh` is a little better than the case with no activation function.
 
 ## Test Results
 ```shell

@@ -41,6 +41,12 @@ def sigmoid(z):
 def derivative_sigmoid(z):
     return np.exp(z) / ((1 + np.exp(z)) ** 2)
 
+def tanh(z):
+    return np.tanh(z)
+
+def derivative_tanh(z):
+    return 1 - np.tanh(z) ** 2
+
 def sigma(z):
     return z + optimization.epsilon * activate(z)
 
@@ -139,7 +145,7 @@ if __name__ == '__main__':
     parser.add_argument('--get_crossover', type=bool, default=False, const=True, nargs='?')
     parser.add_argument('--w_hat_estimate', type=bool, default=False, const=True, nargs='?', help="non linear mse")
     parser.add_argument('--coefficient_epsilon_2', type=bool, default=False, const=True, nargs='?')
-    parser.add_argument('--activate', default='poly2')
+    parser.add_argument('--activate', default='poly2', choices=['poly2', 'sigmoid', 'tanh'])
     np.random.seed(0)
     args = parser.parse_args()
     exec('activate = ' + args.activate)
